@@ -1,0 +1,69 @@
+Program : PROGRAM id ';' ProgramBody
+
+ProgramBody: VarSection MainSection
+
+VarSection : VAR VarsList
+           | DONTFORGETTOREMOVE 
+
+VarsList : VarsList VarsListElem
+         | VarsListElem
+
+VarsListElem : VarsListElemIDs ':' INTEGER ';'
+
+VarsListElemIDs : VarsListElemIDs ',' id
+                | id
+
+MainSection : BEGIN MainSectionList END '.'
+
+MainSectionList : MainSectionList MainSectionListElem
+                | MainSectionListElem 
+
+MainSectionListElem : Func
+                    | IFStatementWrapper
+
+Func : FuncName '(' ArgsList ')' OptionalSemiColon
+
+FuncName : WRITE 
+         | READLN 
+         | WRITELN
+
+ArgsList : ArgsList ',' Arg
+         | Arg
+         | DONTFORGETTOREMOVE
+
+Arg : string
+    | id
+
+IFStatementWrapper : IFStatement OptionalSemiColon
+
+IFStatement : IF Expression THEN Statement ELSE Statement
+            | IF Expression THEN Statement
+
+Statement : IFStatement
+          | Operation
+
+Expression: id ComparationSymbol id
+
+ComparationSymbol : '>'
+                  | '<'
+
+Operation : Atrib
+
+Atrib : id ':' '=' id
+
+OptionalSemiColon : ';'
+                  | DONTFORGETTOREMOVE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
