@@ -1,10 +1,10 @@
 import ply.lex as lex
 
-literals = ['(', ')', ';', '.', ',', ':', '{', '}', '>', '<', '=']
+literals = ['(', ')', ';', '.', ',', ':', '{', '}', '>', '<', '=', '*']
 
 tokens = (
-    'PROGRAM', 'VAR', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE',
-    'id', 'string'
+    'PROGRAM', 'VAR', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'FOR', 'TO', 'DO',
+    'id', 'string', 'num', 'boolean'
 )
 
 
@@ -43,9 +43,30 @@ def t_ELSE(t):
     return t
 
 
+def t_FOR(t):
+    r'for'
+    return t
+
+
+def t_TO(t):
+    r'to'
+    return t
+
+
+def t_DO(t):
+    r'do'
+    return t
+
+
 def t_string(t):
     r'\'[^\']*?\''
     t.value = t.value[1:-1]
+    return t
+
+
+def t_num(t):
+    r'\d+'
+    t.value = int(t.value)
     return t
 
 

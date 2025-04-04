@@ -18,10 +18,12 @@ MainSection : BEGIN MainSectionList END '.'
 MainSectionList : MainSectionList MainSectionListElem
                 | MainSectionListElem 
 
-MainSectionListElem : Func
-                    | IFStatementWrapper
+MainSectionListElem : Func OptionalSemiColon
+                    | Atrib OptionalSemiColon
+                    | FORStatement OptionalSemiColon
+                    | IFStatement OptionalSemiColon
 
-Func : id '(' ArgsList ')' OptionalSemiColon
+Func : id '(' ArgsList ')' 
 
 ArgsList : ArgsList ',' Arg
          | Arg
@@ -30,28 +32,42 @@ ArgsList : ArgsList ',' Arg
 Arg : string
     | id
 
-IFStatementWrapper : IFStatement OptionalSemiColon
-
-IFStatement : IF Expression THEN Statement ELSE Statement
-            | IF Expression THEN Statement
+IFStatement : IF Condition THEN Statement ELSE Statement
+            | IF Condition THEN Statement
 
 Statement : IFStatement
           | Operation
 
-Expression: id ComparationSymbol id
+Condition: id ComparationSymbol id
 
 ComparationSymbol : '>'
                   | '<'
+                  | '=' 
 
 Operation : Atrib
 
-Atrib : id ':' '=' id
+Atrib : id ':' '=' Exp
+
+Exp : Exp '+' Term
+    | Exp '-' Term
+    | Term
+
+Term : Term '*' Factor
+     | Term '/' Factor
+     | Factor
+
+Factor : Exp
+       | num
+       | id
+
+FORStatement : FOR Atrib TO id DO FORBody
+
+FORBody : FORStatement
+        | BEGIN MainSectionList END ';'
+        | MainSectionListElem
 
 OptionalSemiColon : ';'
                   | DONTFORGETTOREMOVE
-
-
-
 
 
 
