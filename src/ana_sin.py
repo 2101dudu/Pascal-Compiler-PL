@@ -222,6 +222,7 @@ def p_error(p):
               p.lineno}, position {p.lexpos}")
     else:
         print("Syntax error at end of input")
+    print("Erro de sintaxe!")
 
 
 parser = yacc.yacc()
