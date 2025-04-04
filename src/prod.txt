@@ -30,7 +30,7 @@ ArgsList : ArgsList ',' Arg
          | DONTFORGETTOREMOVE
 
 Arg : string
-    | id
+    | Exp
 
 IFStatement : IF Condition THEN Statement ELSE Statement
             | IF Condition THEN Statement
@@ -38,27 +38,58 @@ IFStatement : IF Condition THEN Statement ELSE Statement
 Statement : IFStatement
           | Operation
 
-Condition: id ComparationSymbol id
-
-ComparationSymbol : '>'
-                  | '<'
-                  | '=' 
+Condition: BooleanExp
 
 Operation : Atrib
 
-Atrib : id ':' '=' Exp
+Atrib : id ':' '=' Exp 
 
-Exp : Exp '+' Term
-    | Exp '-' Term
-    | Term
+Exp : NumExp
+    | BooleanExp
+    | LogicExp
+
+
+NumExp : NumExp '+' Term
+       | NumExp '-' Term
+       | Term
 
 Term : Term '*' Factor
      | Term '/' Factor
+     | Term 'div' Factor
+     | Term 'mod' Factor
      | Factor
 
-Factor : Exp
+Factor : '(' NumExp ')'
        | num
        | id
+
+BooleanExp : BooleanExp '<' BooleanTerm
+           | BooleanExp '>' BooleanTerm
+           | BooleanTerm
+
+BooleanTerm : BooleanTerm '>' '=' BooleanFactor
+            | BooleanTerm '<' '=' BooleanFactor
+            | BooleanTerm '=' BooleanFactor
+            | BooleanFactor
+
+BooleanFactor : BooleanExp
+              | boolean
+              | num
+              | id
+
+
+LogicExp : LogicExp or LogicExpTerm
+         | LogicExpTerm
+
+LogicExpTerm : LogicExpTerm and LogicFactor
+             | LogicFactor
+
+LogicFactor : BooleanExp
+            | boolean
+
+
+
+
 
 FORStatement : FOR Atrib TO id DO FORBody
 

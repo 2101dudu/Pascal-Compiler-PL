@@ -70,6 +70,11 @@ def t_num(t):
     return t
 
 
+def t_boolean(t):
+    r'true|false'
+    return t
+
+
 def t_id(t):
     r'[a-zA-Z_]\w*'
     return t
