@@ -8,7 +8,7 @@ VarSection : VAR VarsList
 VarsList : VarsList VarsListElem
          | VarsListElem
 
-VarsListElem : VarsListElemIDs ':' INTEGER ';'
+VarsListElem : VarsListElemIDs ':' id ';'
 
 VarsListElemIDs : VarsListElemIDs ',' id
                 | id
@@ -21,11 +21,7 @@ MainSectionList : MainSectionList MainSectionListElem
 MainSectionListElem : Func
                     | IFStatementWrapper
 
-Func : FuncName '(' ArgsList ')' OptionalSemiColon
-
-FuncName : WRITE 
-         | READLN 
-         | WRITELN
+Func : id '(' ArgsList ')' OptionalSemiColon
 
 ArgsList : ArgsList ',' Arg
          | Arg

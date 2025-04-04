@@ -4,7 +4,6 @@ literals = ['(', ')', ';', '.', ',', ':', '{', '}', '>', '<', '=']
 
 tokens = (
     'PROGRAM', 'VAR', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE',
-    'WRITELN', 'INTEGER', 'WRITE', 'READLN',
     'id', 'string'
 )
 
@@ -41,26 +40,6 @@ def t_THEN(t):
 
 def t_ELSE(t):
     r'else'
-    return t
-
-
-def t_WRITELN(t):
-    r'WriteLn'
-    return t
-
-
-def t_INTEGER(t):
-    r'Integer'
-    return t
-
-
-def t_WRITE(t):
-    r'Write'
-    return t
-
-
-def t_READLN(t):
-    r'ReadLn'
     return t
 
 

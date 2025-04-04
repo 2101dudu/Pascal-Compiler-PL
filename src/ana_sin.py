@@ -43,7 +43,7 @@ def p_varslist_varslistelem(p):
 
 def p_varslistelem_varslistelemids(p):
     """
-    VarsListElem : VarsListElemIDs ':' INTEGER ';'
+    VarsListElem : VarsListElemIDs ':' id ';'
     """
 
 
@@ -91,25 +91,7 @@ def p_mainsectionlistelem_ifstatementwrapper(p):
 
 def p_func_funcname(p):
     """
-    Func : FuncName '(' ArgsList ')' OptionalSemiColon
-    """
-
-
-def p_funcname_write(p):
-    """
-    FuncName : WRITE
-    """
-
-
-def p_funcname_readln(p):
-    """
-    FuncName : READLN
-    """
-
-
-def p_funcname_writeln(p):
-    """
-    FuncName : WRITELN
+    Func : id '(' ArgsList ')' OptionalSemiColon
     """
 
 
