@@ -1,10 +1,3 @@
-import sys
-import ply.yacc as yacc
-from ana_lex import tokens
-from ana_lex import literals
-from gen import gen_code
-
-
 def p_program_program(p):
     """
     Program : PROGRAM id ';' ProgramBody
@@ -23,9 +16,9 @@ def p_varsection_var(p):
     """
 
 
-def p_varsection_empty(p):
+def p_varsection_dontforgettoremove(p):
     """
-    VarSection :
+    VarSection : DONTFORGETTOREMOVE
     """
 
 
@@ -113,15 +106,15 @@ def p_argslist_argslist(p):
     """
 
 
-def p_argslist_single(p):
+def p_argslist_arg(p):
     """
     ArgsList : Arg
     """
 
 
-def p_argslist_empty(p):
+def p_argslist_dontforgettoremove(p):
     """
-    ArgsList :
+    ArgsList : DONTFORGETTOREMOVE
     """
 
 
@@ -143,7 +136,7 @@ def p_ifstatement_if(p):
     """
 
 
-def p_ifstatement_if_single(p):
+def p_ifstatement_if(p):
     """
     IFStatement : IF Condition THEN Statement
     """
@@ -167,19 +160,19 @@ def p_condition_id(p):
     """
 
 
-def p_comparationsymbol_gt(p):
+def p_comparationsymbol_(p):
     """
     ComparationSymbol : '>'
     """
 
 
-def p_comparationsymbol_lt(p):
+def p_comparationsymbol_(p):
     """
     ComparationSymbol : '<'
     """
 
 
-def p_comparationsymbol_eq(p):
+def p_comparationsymbol_(p):
     """
     ComparationSymbol : '='
     """
@@ -193,17 +186,17 @@ def p_operation_atrib(p):
 
 def p_atrib_id(p):
     """
-    Atrib : id ':' '=' Exp
+    Atrib : id ':' '=' Val
     """
 
 
-def p_exp_exp_add(p):
+def p_exp_exp(p):
     """
     Exp : Exp '+' Term
     """
 
 
-def p_exp_exp_sub(p):
+def p_exp_exp(p):
     """
     Exp : Exp '-' Term
     """
@@ -215,13 +208,13 @@ def p_exp_term(p):
     """
 
 
-def p_term_term_mul(p):
+def p_term_term(p):
     """
     Term : Term '*' Factor
     """
 
 
-def p_term_term_div(p):
+def p_term_term(p):
     """
     Term : Term '/' Factor
     """
@@ -251,6 +244,18 @@ def p_factor_id(p):
     """
 
 
+def p_optionalsemicolon_(p):
+    """
+    OptionalSemiColon : ';'
+    """
+
+
+def p_optionalsemicolon_dontforgettoremove(p):
+    """
+    OptionalSemiColon : DONTFORGETTOREMOVE
+    """
+
+
 def p_forstatement_for(p):
     """
     FORStatement : FOR Atrib TO id DO FORBody
@@ -273,37 +278,3 @@ def p_forbody_mainsectionlistelem(p):
     """
     FORBody : MainSectionListElem
     """
-
-
-def p_optionalsemicolon_(p):
-    """
-    OptionalSemiColon : ';'
-    """
-
-
-def p_optionalsemicolon_empty(p):
-    """
-    OptionalSemiColon :
-    """
-
-
-def p_error(p):
-    parser.success = False
-    if p:
-        print(f"Syntax error at '{p.value}', line {
-              p.lineno}, position {p.lexpos}")
-    else:
-        print("Syntax error at end of input")
-    print("Erro de sintaxe!")
-
-
-parser = yacc.yacc()
-
-texto = sys.stdin.read()
-parser.success = True
-parser.parse(texto)
-
-if parser.success:
-    print(f"Texto válido.\n")
-else:
-    print("Texto inválido...")
