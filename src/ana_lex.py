@@ -1,15 +1,21 @@
 import ply.lex as lex
 
-literals = ['(', ')', ';', '.']
+literals = ['(', ')', ';', '.', ',', ':', '{', '}', '>', '<', '=']
 
 tokens = (
-    'PROGRAM', 'BEGIN', 'END', 'WRITELN',
+    'PROGRAM', 'VAR', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE',
+    'WRITELN', 'INTEGER', 'WRITE', 'READLN',
     'id', 'string'
 )
 
 
 def t_PROGRAM(t):
     r'program'
+    return t
+
+
+def t_VAR(t):
+    r'var'
     return t
 
 
@@ -23,8 +29,38 @@ def t_END(t):
     return t
 
 
+def t_IF(t):
+    r'if'
+    return t
+
+
+def t_THEN(t):
+    r'then'
+    return t
+
+
+def t_ELSE(t):
+    r'else'
+    return t
+
+
 def t_WRITELN(t):
-    r'writeln'
+    r'WriteLn'
+    return t
+
+
+def t_INTEGER(t):
+    r'Integer'
+    return t
+
+
+def t_WRITE(t):
+    r'Write'
+    return t
+
+
+def t_READLN(t):
+    r'ReadLn'
     return t
 
 
@@ -35,11 +71,12 @@ def t_string(t):
 
 
 def t_id(t):
-    r'[a-zA-Z_][a-zA-Z0-9_]*'
+    r'[a-zA-Z_]\w*'
     return t
 
 
 t_ignore = ' \t\n'
+t_ignore_COMMENT = r'{.*}'
 
 
 def t_error(t):
