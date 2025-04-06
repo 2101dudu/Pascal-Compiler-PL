@@ -4,7 +4,7 @@ literals = ['(', ')', ';', '.', ',', ':',
             '{', '}', '>', '<', '=', '*', '+', '[', ']']
 
 tokens = (
-    'PROGRAM', 'VAR', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'FOR', 'TO', 'DO', 'WHILE', 'DIV', 'MOD', 'AND', 'OR', 'NOT', 'ARRAY', 'OF',
+    'PROGRAM', 'VAR', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'FOR', 'TO', 'DO', 'WHILE', 'DIV', 'MOD', 'AND', 'OR', 'NOT', 'ARRAY', 'OF', 'DOWNTO',
     'id', 'string', 'num', 'boolean'
 )
 
@@ -51,6 +51,11 @@ def t_FOR(t):
 
 def t_TO(t):
     r'to'
+    return t
+
+
+def t_DOWNTO(t):
+    r'downto'
     return t
 
 

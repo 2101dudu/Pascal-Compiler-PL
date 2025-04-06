@@ -41,7 +41,10 @@ Arg : '(' Arg ')'
     | Exp
 
 
-FORStatement : FOR Atrib TO NumExp DO FORBody
+FORStatement : FOR Atrib FORTo NumExp DO FORBody
+
+FORTo : TO
+      | DOWNTO
 
 FORBody : FORStatement
         | BEGIN MainSectionList END OptionalSemiColon
@@ -61,12 +64,14 @@ Condition : '(' Condition ')'
 
 Operation : Atrib
 
-Atrib : IDWrapper ':' '=' Exp
+Atrib : IDWrapper ':' '=' AtribVal
 
 IDWrapper : '(' IDWrapper ')'
           | ArrayElem
           | id
 
+AtribVal : Exp
+         | Func
 
 Exp : NumExp
     | BooleanExp
@@ -101,6 +106,7 @@ BooleanExp : BooleanExp ComparationSymbol BooleanExp
 BooleanFactor : '(' Exp ')'
               | boolean
               | num
+              | string
               | ArrayElem
               | id
 

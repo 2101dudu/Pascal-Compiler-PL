@@ -175,7 +175,19 @@ def p_arg_exp(p):
 
 def p_forstatement_for(p):
     """
-    FORStatement : FOR Atrib TO NumExp DO FORBody
+    FORStatement : FOR Atrib FORTo NumExp DO FORBody
+    """
+
+
+def p_forto_to(p):
+    """
+    FORTo : TO
+    """
+
+
+def p_forto_downto(p):
+    """
+    FORTo : DOWNTO
     """
 
 
@@ -245,9 +257,9 @@ def p_condition_logicexp(p):
     """
 
 
-def p_atrib_id(p):
+def p_atrib_idwrapper(p):
     """
-    Atrib : IDWrapper ':' '=' Exp
+    Atrib : IDWrapper ':' '=' AtribVal
     """
 
 
@@ -266,6 +278,18 @@ def p_idwrapper_arrayelem(p):
 def p_idwrapper_id(p):
     """
     IDWrapper : id
+    """
+
+
+def p_atribval_exp(p):
+    """
+    AtribVal : Exp
+    """
+
+
+def p_atribval_func(p):
+    """
+    AtribVal : Func
     """
 
 
@@ -416,6 +440,12 @@ def p_booleanfactor_boolean(p):
 def p_booleanfactor_num(p):
     """
     BooleanFactor : num
+    """
+
+
+def p_booleanfactor_string(p):
+    """
+    BooleanFactor : string
     """
 
 
