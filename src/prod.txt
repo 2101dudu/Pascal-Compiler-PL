@@ -8,7 +8,13 @@ VarSection : VAR VarsList
 VarsList : VarsList VarsListElem
          | VarsListElem
 
-VarsListElem : VarsListElemIDs ':' id ';'
+VarsListElem : VarsListElemIDs ':' VarType ';'
+
+VarType : id
+        | ARRAY ArrayIndexes OF id
+
+ArrayIndexes : '[' num '.' '.' num ']'
+             | DONTFORGETTOREMOVE
 
 VarsListElemIDs : VarsListElemIDs ',' id
                 | id
@@ -35,7 +41,7 @@ Arg : '(' Arg ')'
     | Exp
 
 
-FORStatement : FOR Atrib TO IDWrapper DO FORBody
+FORStatement : FOR Atrib TO NumExp DO FORBody
 
 FORBody : FORStatement
         | BEGIN MainSectionList END OptionalSemiColon
@@ -58,6 +64,7 @@ Operation : Atrib
 Atrib : IDWrapper ':' '=' Exp
 
 IDWrapper : '(' IDWrapper ')'
+          | ArrayElem
           | id
 
 
@@ -78,6 +85,7 @@ NumTerm : NumTerm '*' NumFactor
 
 NumFactor : '(' NumExp ')'
           | num
+          | ArrayElem
           | id
 
 
@@ -93,6 +101,7 @@ BooleanExp : BooleanExp ComparationSymbol BooleanExp
 BooleanFactor : '(' Exp ')'
               | boolean
               | num
+              | ArrayElem
               | id
 
 LogicExp : LogicExp OR LogicTerm
@@ -109,3 +118,5 @@ LogicFactor : '(' LogicExp ')'
 
 OptionalSemiColon : ';'
                   | DONTFORGETTOREMOVE
+
+ArrayElem : id '[' id ']'
