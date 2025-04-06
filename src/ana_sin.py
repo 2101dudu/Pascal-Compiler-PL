@@ -101,6 +101,12 @@ def p_mainsectionlistelem_ifstatement(p):
     """
 
 
+def p_mainsectionlistelem_whilestatement(p):
+    """
+    MainSectionListElem : WHILEStatement OptionalSemiColon
+    """
+
+
 def p_func_id(p):
     """
     Func : id '(' ArgsList ')'
@@ -125,45 +131,195 @@ def p_argslist_empty(p):
     """
 
 
+def p_arg_wrapper(p):
+    """
+    Arg : '(' Arg ')'
+    """
+
+
 def p_arg_string(p):
     """
     Arg : string
     """
 
 
-def p_arg_id(p):
+def p_arg_exp(p):
     """
-    Arg : id
+    Arg : Exp
+    """
+
+
+def p_forstatement_for(p):
+    """
+    FORStatement : FOR Atrib TO IDWrapper DO FORBody
+    """
+
+
+def p_forbody_forstatement(p):
+    """
+    FORBody : FORStatement
+    """
+
+
+def p_forbody_begin(p):
+    """
+    FORBody : BEGIN MainSectionList END OptionalSemiColon
+    """
+
+
+def p_forbody_mainsectionlistelem(p):
+    """
+    FORBody : MainSectionListElem
     """
 
 
 def p_ifstatement_if(p):
     """
-    IFStatement : IF Condition THEN Statement ELSE Statement
+    IFStatement : IF Condition THEN MainSectionListElem ELSE MainSectionListElem
     """
 
 
 def p_ifstatement_if_single(p):
     """
-    IFStatement : IF Condition THEN Statement
+    IFStatement : IF Condition THEN MainSectionListElem
     """
 
 
-def p_statement_ifstatement(p):
+def p_whilestatement_while(p):
     """
-    Statement : IFStatement
-    """
-
-
-def p_statement_operation(p):
-    """
-    Statement : Operation
+    WHILEStatement : WHILE Condition DO WHILEBody
     """
 
 
-def p_condition_id(p):
+def p_whilebody_whilestatement(p):
     """
-    Condition : id ComparationSymbol id
+    WHILEBody : WHILEStatement
+    """
+
+
+def p_whilebody_begin(p):
+    """
+    WHILEBody : BEGIN MainSectionList END OptionalSemiColon
+    """
+
+
+def p_whilebody_mainsectionlistelem(p):
+    """
+    WHILEBody : MainSectionListElem
+    """
+
+
+def p_condition_wrapper(p):
+    """
+    Condition : '(' Condition ')'
+    """
+
+
+def p_condition_logicexp(p):
+    """
+    Condition : LogicExp
+    """
+
+
+def p_atrib_id(p):
+    """
+    Atrib : IDWrapper ':' '=' Exp
+    """
+
+
+def p_idwrapper_(p):
+    """
+    IDWrapper : '(' IDWrapper ')'
+    """
+
+
+def p_idwrapper_id(p):
+    """
+    IDWrapper : id
+    """
+
+
+def p_exp_numexp(p):
+    """
+    Exp : NumExp
+    """
+
+
+def p_exp_booleanexp(p):
+    """
+    Exp : BooleanExp
+    """
+
+
+def p_exp_logicexp(p):
+    """
+    Exp : LogicExp
+    """
+
+
+def p_numexp_numexp_add(p):
+    """
+    NumExp : NumExp '+' NumTerm
+    """
+
+
+def p_numexp_numexp_sub(p):
+    """
+    NumExp : NumExp '-' NumTerm
+    """
+
+
+def p_numexp_numterm(p):
+    """
+    NumExp : NumTerm
+    """
+
+
+def p_numterm_numterm_mul(p):
+    """
+    NumTerm : NumTerm '*' NumFactor
+    """
+
+
+def p_numterm_numterm_div(p):
+    """
+    NumTerm : NumTerm '/' NumFactor
+    """
+
+
+def p_numterm_numterm_whole_div(p):
+    """
+    NumTerm : NumTerm DIV NumFactor
+    """
+
+
+def p_numterm_numterm_mod(p):
+    """
+    NumTerm : NumTerm MOD NumFactor
+    """
+
+
+def p_numterm_numfactor(p):
+    """
+    NumTerm : NumFactor
+    """
+
+
+def p_numfactor_numexp(p):
+    """
+    NumFactor : '(' NumExp ')'
+    """
+
+
+def p_numfactor_num(p):
+    """
+    NumFactor : num
+    """
+
+
+def p_numfactor_id(p):
+    """
+    NumFactor : id
     """
 
 
@@ -185,97 +341,103 @@ def p_comparationsymbol_eq(p):
     """
 
 
-def p_operation_atrib(p):
+def p_comparationsymbol_gte(p):
     """
-    Operation : Atrib
-    """
-
-
-def p_atrib_id(p):
-    """
-    Atrib : id ':' '=' Exp
+    ComparationSymbol : '>' '='
     """
 
 
-def p_exp_exp_add(p):
+def p_comparationsymbol_lte(p):
     """
-    Exp : Exp '+' Term
-    """
-
-
-def p_exp_exp_sub(p):
-    """
-    Exp : Exp '-' Term
+    ComparationSymbol : '<' '='
     """
 
 
-def p_exp_term(p):
+def p_booleanexp_booleanexp(p):
     """
-    Exp : Term
-    """
-
-
-def p_term_term_mul(p):
-    """
-    Term : Term '*' Factor
+    BooleanExp : BooleanExp ComparationSymbol BooleanExp
     """
 
 
-def p_term_term_div(p):
+def p_booleanexp_booleanfactor(p):
     """
-    Term : Term '/' Factor
-    """
-
-
-def p_term_factor(p):
-    """
-    Term : Factor
+    BooleanExp : BooleanFactor
     """
 
 
-def p_factor_exp(p):
+def p_booleanfactor_wrapper(p):
     """
-    Factor : Exp
-    """
-
-
-def p_factor_num(p):
-    """
-    Factor : num
+    BooleanFactor : '(' Exp ')'
     """
 
 
-def p_factor_id(p):
+def p_booleanfactor_boolean(p):
     """
-    Factor : id
-    """
-
-
-def p_forstatement_for(p):
-    """
-    FORStatement : FOR Atrib TO id DO FORBody
+    BooleanFactor : boolean
     """
 
 
-def p_forbody_forstatement(p):
+def p_booleanfactor_num(p):
     """
-    FORBody : FORStatement
-    """
-
-
-def p_forbody_begin(p):
-    """
-    FORBody : BEGIN MainSectionList END ';'
+    BooleanFactor : num
     """
 
 
-def p_forbody_mainsectionlistelem(p):
+def p_booleanfactor_id(p):
     """
-    FORBody : MainSectionListElem
+    BooleanFactor : id
     """
 
 
-def p_optionalsemicolon_(p):
+def p_logicexp_logicexp(p):
+    """
+    LogicExp : LogicExp OR LogicTerm
+    """
+
+
+def p_logicexp_logicterm(p):
+    """
+    LogicExp : LogicTerm
+    """
+
+
+def p_logicterm_logicterm(p):
+    """
+    LogicTerm : LogicTerm AND LogicNot
+    """
+
+
+def p_logicterm_logicnot(p):
+    """
+    LogicTerm : LogicNot
+    """
+
+
+def p_logicnot_not(p):
+    """
+    LogicNot : NOT LogicFactor
+    """
+
+
+def p_logicnot_logicfactor(p):
+    """
+    LogicNot : LogicFactor
+    """
+
+
+def p_logicfactor_logicexp(p):
+    """
+    LogicFactor : '(' LogicExp ')'
+    """
+
+
+def p_logicfactor_booleanexp(p):
+    """
+    LogicFactor : BooleanExp
+    """
+
+
+def p_optionalsemicolon_single(p):
     """
     OptionalSemiColon : ';'
     """
