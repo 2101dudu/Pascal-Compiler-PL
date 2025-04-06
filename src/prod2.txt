@@ -30,19 +30,21 @@ ArgsList : ArgsList ',' Arg
          | Arg
          | DONTFORGETTOREMOVE
 
-Arg : '(' Arg ')'
-    | string
+Arg : string
     | Exp
 
 
-FORStatement : FOR Atrib TO IDWrapper DO FORBody
+FORStatement : FOR Atrib TO id DO FORBody
 
 FORBody : FORStatement
         | BEGIN MainSectionList END OptionalSemiColon
         | MainSectionListElem
 
-IFStatement : IF Condition THEN MainSectionListElem ELSE MainSectionListElem
-            | IF Condition THEN MainSectionListElem
+IFStatement : IF Condition THEN Statement ELSE Statement
+            | IF Condition THEN Statement
+
+Statement : IFStatement
+          | Operation
 
 WHILEStatement : WHILE Condition DO WHILEBody
 
@@ -50,15 +52,11 @@ WHILEBody : WHILEStatement
           | BEGIN MainSectionList END OptionalSemiColon
           | MainSectionListElem
 
-Condition : '(' Condition ')'
-          | LogicExp
+Condition: LogicExp
 
 Operation : Atrib
 
-Atrib : IDWrapper ':' '=' Exp
-
-IDWrapper : '(' IDWrapper ')'
-          | id
+Atrib : id ':' '=' Exp
 
 
 Exp : NumExp
@@ -72,8 +70,8 @@ NumExp : NumExp '+' NumTerm
 
 NumTerm : NumTerm '*' NumFactor
         | NumTerm '/' NumFactor
-        | NumTerm DIV NumFactor
-        | NumTerm MOD NumFactor
+        | NumTerm 'div' NumFactor
+        | NumTerm 'mod' NumFactor
         | NumFactor
 
 NumFactor : '(' NumExp ')'
@@ -90,13 +88,12 @@ ComparationSymbol : '>'
 BooleanExp : BooleanExp ComparationSymbol BooleanExp
            | BooleanFactor
 
-BooleanFactor : '(' Exp ')'
-              | boolean
+BooleanFactor : boolean
               | num
               | id
 
-LogicExp : LogicExp OR LogicTerm
-         | LogicTerm
+LogicExp : LogicExp OR LoficTerm
+         | LoficTerm
 
 LogicTerm : LogicTerm AND LogicNot
           | LogicNot
