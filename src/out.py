@@ -36,7 +36,31 @@ def p_varslist_varslistelem(p):
 
 def p_varslistelem_varslistelemids(p):
     """
-    VarsListElem : VarsListElemIDs ':' id ';'
+    VarsListElem : VarsListElemIDs ':' VarType ';'
+    """
+
+
+def p_vartype_id(p):
+    """
+    VarType : id
+    """
+
+
+def p_vartype_array(p):
+    """
+    VarType : ARRAY ArrayIndexes OF id
+    """
+
+
+def p_arrayindexes_(p):
+    """
+    ArrayIndexes : '[' num '.' '.' num ']'
+    """
+
+
+def p_arrayindexes_dontforgettoremove(p):
+    """
+    ArrayIndexes : DONTFORGETTOREMOVE
     """
 
 
@@ -144,7 +168,7 @@ def p_arg_exp(p):
 
 def p_forstatement_for(p):
     """
-    FORStatement : FOR Atrib TO IDWrapper DO FORBody
+    FORStatement : FOR Atrib TO NumExp DO FORBody
     """
 
 
@@ -232,6 +256,12 @@ def p_idwrapper_(p):
     """
 
 
+def p_idwrapper_arrayelem(p):
+    """
+    IDWrapper : ArrayElem
+    """
+
+
 def p_idwrapper_id(p):
     """
     IDWrapper : id
@@ -316,6 +346,12 @@ def p_numfactor_num(p):
     """
 
 
+def p_numfactor_arrayelem(p):
+    """
+    NumFactor : ArrayElem
+    """
+
+
 def p_numfactor_id(p):
     """
     NumFactor : id
@@ -366,7 +402,7 @@ def p_booleanexp_booleanfactor(p):
 
 def p_booleanfactor_(p):
     """
-    BooleanFactor : '(' BooleanExp ')'
+    BooleanFactor : '(' Exp ')'
     """
 
 
@@ -379,6 +415,12 @@ def p_booleanfactor_boolean(p):
 def p_booleanfactor_num(p):
     """
     BooleanFactor : num
+    """
+
+
+def p_booleanfactor_arrayelem(p):
+    """
+    BooleanFactor : ArrayElem
     """
 
 
@@ -445,4 +487,10 @@ def p_optionalsemicolon_(p):
 def p_optionalsemicolon_dontforgettoremove(p):
     """
     OptionalSemiColon : DONTFORGETTOREMOVE
+    """
+
+
+def p_arrayelem_id(p):
+    """
+    ArrayElem : id '[' id ']'
     """
