@@ -1,6 +1,25 @@
-Program : PROGRAM id ';' ProgramBody
+Program : PROGRAM id ';' FunctionList Main
 
-ProgramBody: VarSection MainSection
+FunctionList : FunctionList FunctionListElem
+             | FunctionListElem
+             | DONTFORGETTOREMOVE
+
+FunctionListElem : FUNCTION FuncDefinition ':' id ';' VarSection FunctionBody
+
+FuncDefinition : id Parameters
+              
+Parameters : '(' PairList ')'
+           | DONTFORGETTOREMOVE
+
+PairList : PairList ';' PairListElem
+         | PairListElem
+         | DONTFORGETTOREMOVE
+
+PairListElem : id ':' id
+
+FunctionBody : BEGIN Body END ';'
+
+Main: VarSection MainSection
 
 VarSection : VAR VarsList
            | DONTFORGETTOREMOVE 
@@ -19,12 +38,12 @@ ArrayIndexes : '[' num '.' '.' num ']'
 VarsListElemIDs : VarsListElemIDs ',' id
                 | id
 
-MainSection : BEGIN MainSectionList END '.'
+MainSection : BEGIN Body END '.'
 
-MainSectionList : MainSectionList MainSectionListElem
-                | MainSectionListElem 
+Body : Body BodyElem
+     | BodyElem 
 
-MainSectionListElem : Func OptionalSemiColon
+BodyElem : Func OptionalSemiColon
                     | Atrib OptionalSemiColon
                     | FORStatement OptionalSemiColon
                     | IFStatement OptionalSemiColon
@@ -47,22 +66,20 @@ FORTo : TO
       | DOWNTO
 
 FORBody : FORStatement
-        | BEGIN MainSectionList END OptionalSemiColon
-        | MainSectionListElem
+        | BEGIN Body END OptionalSemiColon
+        | BodyElem
 
-IFStatement : IF Condition THEN MainSectionListElem ELSE MainSectionListElem
-            | IF Condition THEN MainSectionListElem
+IFStatement : IF Condition THEN BodyElem ELSE BodyElem
+            | IF Condition THEN BodyElem
 
 WHILEStatement : WHILE Condition DO WHILEBody
 
 WHILEBody : WHILEStatement
-          | BEGIN MainSectionList END OptionalSemiColon
-          | MainSectionListElem
+          | BEGIN Body END OptionalSemiColon
+          | BodyElem
 
 Condition : '(' Condition ')'
           | LogicExp
-
-Operation : Atrib
 
 Atrib : IDWrapper ':' '=' AtribVal
 
