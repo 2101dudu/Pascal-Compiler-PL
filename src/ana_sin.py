@@ -442,7 +442,7 @@ def p_booleanfactor_num(p):
     BooleanFactor : num
     """
 
-
+    
 def p_booleanfactor_string(p):
     """
     BooleanFactor : string
