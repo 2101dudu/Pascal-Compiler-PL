@@ -47,6 +47,12 @@ def p_functionlistelem_function(p):
     """
 
 
+def p_functionlistelem_procedure(p):
+    """
+    FunctionListElem : PROCEDURE FuncDefinition ';' OptionalVarList FunctionBody
+    """
+
+
 def p_funcdefinition_id(p):
     """
     FuncDefinition : id Parameters
@@ -619,7 +625,7 @@ def p_optionalsemicolon_empty(p):
 
 def p_arrayelem_id(p):
     """
-    ArrayElem : id '[' id ']'
+    ArrayElem : id '[' Exp ']'
     """
 
 

@@ -8,9 +8,9 @@ def p_optionalvarlist_varsection(p):
     OptionalVarList : VarSection
     """
 
-def p_optionalvarlist_dontforgettoremove(p):
+def p_optionalvarlist_(p):
     """
-    OptionalVarList : DONTFORGETTOREMOVE
+    OptionalVarList : 
     """
 
 def p_functionlist_functionlist(p):
@@ -31,6 +31,11 @@ def p_functionlist_dontforgettoremove(p):
 def p_functionlistelem_function(p):
     """
     FunctionListElem : FUNCTION FuncDefinition ':' id ';' OptionalVarList FunctionBody
+    """
+
+def p_functionlistelem_procedure(p):
+    """
+    FunctionListElem : PROCEDURE FuncDefinition ';' OptionalVarList FunctionBody
     """
 
 def p_funcdefinition_id(p):
@@ -510,6 +515,6 @@ def p_optionalsemicolon_dontforgettoremove(p):
 
 def p_arrayelem_id(p):
     """
-    ArrayElem : id '[' id ']'
+    ArrayElem : id '[' Exp ']'
     """
 
