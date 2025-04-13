@@ -1,7 +1,7 @@
 import ply.lex as lex
 
 literals = ['(', ')', ';', '.', ',', ':',
-            '{', '}', '>', '<', '=', '*', '+', '[', ']']
+            '{', '}', '>', '<', '=', '*', '+', '-', '[', ']']
 
 tokens = (
     'PROGRAM', 'VAR', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'FOR', 'TO', 'DO', 'WHILE', 'DIV', 'MOD', 'AND', 'OR', 'NOT', 'ARRAY', 'OF', 'DOWNTO', 'FUNCTION',
@@ -12,6 +12,7 @@ tokens = (
 def t_PROGRAM(t):
     r'program'
     return t
+
 
 def t_FUNCTION(t):
     r'function'
