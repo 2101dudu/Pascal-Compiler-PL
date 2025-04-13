@@ -1,6 +1,16 @@
 def p_program_program(p):
     """
-    Program : PROGRAM id ';' FunctionList Main
+    Program : PROGRAM id ';' OptionalVarList FunctionList Main
+    """
+
+def p_optionalvarlist_varsection(p):
+    """
+    OptionalVarList : VarSection
+    """
+
+def p_optionalvarlist_dontforgettoremove(p):
+    """
+    OptionalVarList : DONTFORGETTOREMOVE
     """
 
 def p_functionlist_functionlist(p):
@@ -13,14 +23,14 @@ def p_functionlist_functionlistelem(p):
     FunctionList : FunctionListElem
     """
 
-def p_functionlist_functionlistelem_empty(p):
+def p_functionlist_dontforgettoremove(p):
     """
-    FunctionList :
+    FunctionList : DONTFORGETTOREMOVE
     """
 
 def p_functionlistelem_function(p):
     """
-    FunctionListElem : FUNCTION FuncDefinition ':' id ';' VarSection FunctionBody
+    FunctionListElem : FUNCTION FuncDefinition ':' id ';' OptionalVarList FunctionBody
     """
 
 def p_funcdefinition_id(p):
@@ -63,9 +73,9 @@ def p_functionbody_begin(p):
     FunctionBody : BEGIN Body END ';'
     """
 
-def p_main_varsection(p):
+def p_main_optionalvarlist(p):
     """
-    Main : VarSection MainSection
+    Main : OptionalVarList MainSection
     """
 
 def p_varsection_var(p):
@@ -268,11 +278,6 @@ def p_condition_logicexp(p):
     Condition : LogicExp
     """
 
-def p_operation_atrib(p):
-    """
-    Operation : Atrib
-    """
-
 def p_atrib_idwrapper(p):
     """
     Atrib : IDWrapper ':' '=' AtribVal
@@ -378,6 +383,11 @@ def p_numfactor_id(p):
     NumFactor : id
     """
 
+def p_numfactor_func(p):
+    """
+    NumFactor : Func
+    """
+
 def p_comparationsymbol_(p):
     """
     ComparationSymbol : '>'
@@ -441,6 +451,11 @@ def p_booleanfactor_arrayelem(p):
 def p_booleanfactor_id(p):
     """
     BooleanFactor : id
+    """
+
+def p_booleanfactor_func(p):
+    """
+    BooleanFactor : Func
     """
 
 def p_logicexp_logicexp(p):

@@ -1,10 +1,13 @@
-Program : PROGRAM id ';' FunctionList Main
+Program : PROGRAM id ';' OptionalVarList FunctionList Main
+
+OptionalVarList : VarSection
+                | DONTFORGETTOREMOVE
 
 FunctionList : FunctionList FunctionListElem
              | FunctionListElem
              | DONTFORGETTOREMOVE
 
-FunctionListElem : FUNCTION FuncDefinition ':' id ';' VarSection FunctionBody
+FunctionListElem : FUNCTION FuncDefinition ':' id ';' OptionalVarList FunctionBody
 
 FuncDefinition : id Parameters
               
@@ -19,7 +22,7 @@ PairListElem : id ':' id
 
 FunctionBody : BEGIN Body END ';'
 
-Main: VarSection MainSection
+Main: OptionalVarList MainSection
 
 VarSection : VAR VarsList
            | DONTFORGETTOREMOVE 
@@ -44,10 +47,10 @@ Body : Body BodyElem
      | BodyElem 
 
 BodyElem : Func OptionalSemiColon
-                    | Atrib OptionalSemiColon
-                    | FORStatement OptionalSemiColon
-                    | IFStatement OptionalSemiColon
-                    | WHILEStatement OptionalSemiColon
+         | Atrib OptionalSemiColon
+         | FORStatement OptionalSemiColon
+         | IFStatement OptionalSemiColon
+         | WHILEStatement OptionalSemiColon
 
 Func : id '(' ArgsList ')' 
 
@@ -109,6 +112,7 @@ NumFactor : '(' NumExp ')'
           | num
           | ArrayElem
           | id
+          | Func
 
 
 ComparationSymbol : '>'
@@ -126,6 +130,7 @@ BooleanFactor : '(' Exp ')'
               | string
               | ArrayElem
               | id
+              | Func
 
 LogicExp : LogicExp OR LogicTerm
          | LogicTerm
