@@ -85,14 +85,11 @@ WHILEBody : WHILEStatement
 Condition : '(' Condition ')'
           | LogicExp
 
-Atrib : IDWrapper ':' '=' AtribVal
+Atrib : IDWrapper ':' '=' Exp
 
 IDWrapper : '(' IDWrapper ')'
           | ArrayElem
           | id
-
-AtribVal : Exp
-         | Func
 
 Exp : NumExp
     | BooleanExp

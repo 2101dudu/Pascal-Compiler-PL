@@ -349,7 +349,7 @@ def p_condition_logicexp(p):
 
 def p_atrib_idwrapper(p):
     """
-    Atrib : IDWrapper ':' '=' AtribVal
+    Atrib : IDWrapper ':' '=' Exp
     """
 
 
@@ -368,18 +368,6 @@ def p_idwrapper_arrayelem(p):
 def p_idwrapper_id(p):
     """
     IDWrapper : id
-    """
-
-
-def p_atribval_exp(p):
-    """
-    AtribVal : Exp
-    """
-
-
-def p_atribval_func(p):
-    """
-    AtribVal : Func
     """
 
 
