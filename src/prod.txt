@@ -1,22 +1,23 @@
 Program : PROGRAM id ';' OptionalVarList FunctionList Main
 
 OptionalVarList : VarSection
-                | DONTFORGETTOREMOVE
+                | 
 
 FunctionList : FunctionList FunctionListElem
              | FunctionListElem
-             | DONTFORGETTOREMOVE
+             | 
 
 FunctionListElem : FUNCTION FuncDefinition ':' id ';' OptionalVarList FunctionBody
+                 | PROCEDURE FuncDefinition ';' OptionalVarList FunctionBody
 
 FuncDefinition : id Parameters
               
 Parameters : '(' PairList ')'
-           | DONTFORGETTOREMOVE
+           | 
 
 PairList : PairList ';' PairListElem
          | PairListElem
-         | DONTFORGETTOREMOVE
+         | 
 
 PairListElem : id ':' id
 
@@ -25,7 +26,7 @@ FunctionBody : BEGIN Body END ';'
 Main: OptionalVarList MainSection
 
 VarSection : VAR VarsList
-           | DONTFORGETTOREMOVE 
+           |  
 
 VarsList : VarsList VarsListElem
          | VarsListElem
@@ -36,7 +37,7 @@ VarType : id
         | ARRAY ArrayIndexes OF id
 
 ArrayIndexes : '[' num '.' '.' num ']'
-             | DONTFORGETTOREMOVE
+             | 
 
 VarsListElemIDs : VarsListElemIDs ',' id
                 | id
@@ -56,7 +57,7 @@ Func : id '(' ArgsList ')'
 
 ArgsList : ArgsList ',' Arg
          | Arg
-         | DONTFORGETTOREMOVE
+         | 
 
 Arg : '(' Arg ')'
     | string
@@ -145,6 +146,6 @@ LogicFactor : '(' LogicExp ')'
             | BooleanExp
 
 OptionalSemiColon : ';'
-                  | DONTFORGETTOREMOVE
+                  | 
 
-ArrayElem : id '[' id ']'
+ArrayElem : id '[' Exp ']'
