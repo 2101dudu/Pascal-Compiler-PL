@@ -53,7 +53,10 @@ BodyElem : Func OptionalSemiColon
          | IFStatement OptionalSemiColon
          | WHILEStatement OptionalSemiColon
 
-Func : id '(' ArgsList ')' 
+Func : id ArgSection
+
+ArgSection : '(' ArgsList ')'
+           |
 
 ArgsList : ArgsList ',' Arg
          | Arg
@@ -73,8 +76,11 @@ FORBody : FORStatement
         | BEGIN Body END OptionalSemiColon
         | BodyElem
 
-IFStatement : IF Condition THEN BodyElem ELSE BodyElem
-            | IF Condition THEN BodyElem
+IFStatement : IF Condition THEN IFBody ELSE IFBody
+            | IF Condition THEN IFBody
+
+IFBody : BEGIN Body END OptionalSemiColon
+       | BodyElem
 
 WHILEStatement : WHILE Condition DO WHILEBody
 

@@ -223,7 +223,17 @@ def p_bodyelem_whilestatement(p):
 
 def p_func_id(p):
     """
-    Func : id '(' ArgsList ')'
+    Func : id ArgSection
+    """
+
+def p_argsection(p):
+    """
+    ArgSection : '(' ArgsList ')'
+    """
+
+def p_argsection_empty(p):
+    """
+    ArgSection :
     """
 
 
@@ -281,7 +291,7 @@ def p_forto_downto(p):
     """
 
 
-def p_forbody_forstatement(p):
+def p_forbody_forstatement(p): ## Necessário?
     """
     FORBody : FORStatement
     """
@@ -301,15 +311,26 @@ def p_forbody_bodyelem(p):
 
 def p_ifstatement_if(p):
     """
-    IFStatement : IF Condition THEN BodyElem ELSE BodyElem
+    IFStatement : IF Condition THEN IFBody ELSE IFBody
     """
 
 
 def p_ifstatement_if_single(p):
     """
-    IFStatement : IF Condition THEN BodyElem
+    IFStatement : IF Condition THEN IFBody
     """
 
+################## Exatamente igual ao FORBody (mentemos?)
+def p_ifbody_begin(p):
+    """
+    IFBody : BEGIN Body END OptionalSemiColon
+    """
+
+def p_ifbody_bodyelem(p):
+    """
+    IFBody : BodyElem
+    """
+##########################################################
 
 def p_whilestatement_while(p):
     """
@@ -620,8 +641,7 @@ def p_arrayelem_id(p):
 def p_error(p):
     parser.success = False
     if p:
-        print(f"Syntax error at '{p.value}', line {
-              p.lineno}, position {p.lexpos}")
+        print(f"Syntax error at '{p.value}', line {p.lineno}, position {p.lexpos}")
     else:
         print("Syntax error at end of input")
     print("Erro de sintaxe!")
