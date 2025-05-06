@@ -67,8 +67,7 @@ FORStatement : FOR Atrib FORTo NumExp DO FORBody
 FORTo : TO
       | DOWNTO
 
-FORBody : FORStatement
-        | BEGIN Body END OptionalSemiColon
+FORBody : BEGIN Body END OptionalSemiColon
         | BodyElem
 
 IFStatement : IF Condition THEN IFBody ELSE IFBody
@@ -79,8 +78,7 @@ IFBody : BEGIN Body END OptionalSemiColon
 
 WHILEStatement : WHILE Condition DO WHILEBody
 
-WHILEBody : WHILEStatement
-          | BEGIN Body END OptionalSemiColon
+WHILEBody : BEGIN Body END OptionalSemiColon
           | BodyElem
 
 Condition : '(' Condition ')'
@@ -130,8 +128,8 @@ OrExp : OrExp OR AndExp
 AndExp : AndExp AND RelExp
        | RelExp
 
-RelExp : AddExp
-       | AddExp ComparationSymbol AddExp
+RelExp : AddExp ComparationSymbol AddExp
+       | AddExp
 
 AddExp : AddExp TermOp MulExp
        | MulExp

@@ -274,13 +274,6 @@ def p_forto_downto(p):
     FORTo : DOWNTO
     """
 
-
-def p_forbody_forstatement(p): ## Necessário?
-    """
-    FORBody : FORStatement
-    """
-
-
 def p_forbody_begin(p):
     """
     FORBody : BEGIN Body END OptionalSemiColon
@@ -304,7 +297,6 @@ def p_ifstatement_if_single(p):
     IFStatement : IF Condition THEN IFBody
     """
 
-################## Exatamente igual ao FORBody (mentemos?)
 def p_ifbody_begin(p):
     """
     IFBody : BEGIN Body END OptionalSemiColon
@@ -314,17 +306,10 @@ def p_ifbody_bodyelem(p):
     """
     IFBody : BodyElem
     """
-##########################################################
 
 def p_whilestatement_while(p):
     """
     WHILEStatement : WHILE Condition DO WHILEBody
-    """
-
-
-def p_whilebody_whilestatement(p):
-    """
-    WHILEBody : WHILEStatement
     """
 
 

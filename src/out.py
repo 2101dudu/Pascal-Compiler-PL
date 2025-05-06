@@ -223,11 +223,6 @@ def p_forto_downto(p):
     FORTo : DOWNTO
     """
 
-def p_forbody_forstatement(p):
-    """
-    FORBody : FORStatement
-    """
-
 def p_forbody_begin(p):
     """
     FORBody : BEGIN Body END OptionalSemiColon
@@ -261,11 +256,6 @@ def p_ifbody_bodyelem(p):
 def p_whilestatement_while(p):
     """
     WHILEStatement : WHILE Condition DO WHILEBody
-    """
-
-def p_whilebody_whilestatement(p):
-    """
-    WHILEBody : WHILEStatement
     """
 
 def p_whilebody_begin(p):
@@ -445,12 +435,12 @@ def p_andexp_relexp(p):
 
 def p_relexp_addexp(p):
     """
-    RelExp : AddExp
+    RelExp : AddExp ComparationSymbol AddExp
     """
 
 def p_relexp_addexp(p):
     """
-    RelExp : AddExp ComparationSymbol AddExp
+    RelExp : AddExp
     """
 
 def p_addexp_addexp(p):
