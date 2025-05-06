@@ -47,16 +47,11 @@ MainSection : BEGIN Body END '.'
 Body : Body BodyElem
      | BodyElem 
 
-BodyElem : Func OptionalSemiColon
+BodyElem : Factor OptionalSemiColon
          | Atrib OptionalSemiColon
          | FORStatement OptionalSemiColon
          | IFStatement OptionalSemiColon
          | WHILEStatement OptionalSemiColon
-
-Func : id ArgSection
-
-ArgSection : '(' ArgsList ')'
-           |
 
 ArgsList : ArgsList ',' Arg
          | Arg
@@ -94,26 +89,18 @@ Condition : '(' Condition ')'
 Atrib : IDWrapper ':' '=' Exp
 
 IDWrapper : '(' IDWrapper ')'
-          | ArrayElem
-          | id
+          | Factor
 
 Exp : NumExp
     | BooleanExp
     | LogicExp
 
 
-NumExp : NumExp '+' NumTerm
-       | NumExp '-' NumTerm
+NumExp : NumExp TermOp NumTerm
        | NumTerm
 
-NumTerm : NumTerm '*' NumFactor
-        | NumTerm '/' NumFactor
-        | NumTerm DIV NumFactor
-        | NumTerm MOD NumFactor
-        | NumFactor
-
-NumFactor : '(' NumExp ')'
-          | Primary
+NumTerm : NumTerm FactorOp Factor
+        | Factor
 
 ComparationSymbol : '>'
                   | '<'
@@ -122,32 +109,39 @@ ComparationSymbol : '>'
                   | '<' '='
 
 BooleanExp : BooleanExp ComparationSymbol BooleanExp
-           | BooleanFactor
-
-BooleanFactor : '(' Exp ')'
-              | boolean
-              | string
-              | Primary
+           | Factor
 
 LogicExp : LogicExp OR LogicTerm
          | LogicTerm
 
 LogicTerm : LogicTerm AND LogicNot
-          | LogicNot
+           | LogicNot
 
-LogicNot : NOT LogicFactor
-         | LogicFactor
-
-LogicFactor : '(' LogicExp ')'
-            | BooleanExp
+LogicNot : NOT LogicNot
+         | '(' LogicExp ')'
+         | BooleanExp
 
 OptionalSemiColon : ';'
                   | 
 
-ArrayElem : id '[' Exp ']'
+Factor : Primary SuffixList
 
+Suffix : '(' ArgsList ')'
+       | '[' Exp ']'
+
+SuffixList : SuffixList Suffix
+           | 
 
 Primary : num
+        | string
+        | boolean
         | id
-        | Func
-        | ArrayElem
+        | '(' Exp ')'
+    
+TermOp : '+'
+       | '-'
+
+FactorOp : '*'
+         | '/'
+         | DIV
+         | MOD

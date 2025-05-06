@@ -191,9 +191,9 @@ def p_body_bodyelem(p):
     """
 
 
-def p_bodyelem_func(p):
+def p_bodyelem_factor(p):
     """
-    BodyElem : Func OptionalSemiColon
+    BodyElem : Factor OptionalSemiColon
     """
 
 
@@ -218,22 +218,6 @@ def p_bodyelem_ifstatement(p):
 def p_bodyelem_whilestatement(p):
     """
     BodyElem : WHILEStatement OptionalSemiColon
-    """
-
-
-def p_func_id(p):
-    """
-    Func : id ArgSection
-    """
-
-def p_argsection(p):
-    """
-    ArgSection : '(' ArgsList ')'
-    """
-
-def p_argsection_empty(p):
-    """
-    ArgSection :
     """
 
 
@@ -380,15 +364,9 @@ def p_idwrapper_(p):
     """
 
 
-def p_idwrapper_arrayelem(p):
+def p_idwrapper_factor(p):
     """
-    IDWrapper : ArrayElem
-    """
-
-
-def p_idwrapper_id(p):
-    """
-    IDWrapper : id
+    IDWrapper : Factor
     """
 
 
@@ -398,29 +376,16 @@ def p_exp_numexp(p):
     """
 
 
-def p_exp_booleanexp(p):
-    """
-    Exp : BooleanExp
-    """
-
-
 def p_exp_logicexp(p):
     """
     Exp : LogicExp
     """
 
 
-def p_numexp_numexp_add(p):
+def p_numexp_numexp(p):
     """
-    NumExp : NumExp '+' NumTerm
+    NumExp : NumExp TermOp NumTerm
     """
-
-
-def p_numexp_numexp_sub(p):
-    """
-    NumExp : NumExp '-' NumTerm
-    """
-
 
 def p_numexp_numterm(p):
     """
@@ -428,45 +393,15 @@ def p_numexp_numterm(p):
     """
 
 
-def p_numterm_numterm_mul(p):
-    """
-    NumTerm : NumTerm '*' NumFactor
-    """
-
-
-def p_numterm_numterm_div(p):
-    """
-    NumTerm : NumTerm '/' NumFactor
-    """
-
-
-def p_numterm_numterm_whole_div(p):
-    """
-    NumTerm : NumTerm DIV NumFactor
-    """
-
-
 def p_numterm_numterm(p):
     """
-    NumTerm : NumTerm MOD NumFactor
+    NumTerm : NumTerm FactorOp Factor
     """
 
 
-def p_numterm_numfactor(p):
+def p_numterm_factor(p):
     """
-    NumTerm : NumFactor
-    """
-
-
-def p_numfactor_(p):
-    """
-    NumFactor : '(' NumExp ')'
-    """
-
-
-def p_numfactor_primary(p):
-    """
-    NumFactor : Primary
+    NumTerm : Factor
     """
 
 
@@ -506,38 +441,9 @@ def p_booleanexp_booleanexp(p):
     """
 
 
-def p_booleanexp_booleanfactor(p):
+def p_booleanexp_factor(p):
     """
-    BooleanExp : BooleanFactor
-    """
-
-
-def p_booleanfactor_(p):
-    """
-    BooleanFactor : '(' Exp ')'
-    """
-
-
-def p_booleanfactor_boolean(p):
-    """
-    BooleanFactor : boolean
-    """
-
-
-def p_booleanfactor_string(p):
-    """
-    BooleanFactor : string
-    """
-
-def p_booleanfactor_primary(p):
-    """
-    BooleanFactor : Primary
-    """
-
-
-def p_logicexp_logicexp(p):
-    """
-    LogicExp : LogicExp OR LogicTerm
+    BooleanExp : Factor
     """
 
 
@@ -546,40 +452,29 @@ def p_logicexp_logicterm(p):
     LogicExp : LogicTerm
     """
 
-
 def p_logicterm_logicterm(p):
     """
     LogicTerm : LogicTerm AND LogicNot
     """
-
 
 def p_logicterm_logicnot(p):
     """
     LogicTerm : LogicNot
     """
 
-
 def p_logicnot_not(p):
     """
-    LogicNot : NOT LogicFactor
+    LogicNot : NOT LogicNot
     """
 
-
-def p_logicnot_logicfactor(p):
+def p_logicnot_(p):
     """
-    LogicNot : LogicFactor
-    """
-
-
-def p_logicfactor_(p):
-    """
-    LogicFactor : '(' LogicExp ')'
+    LogicNot : '(' LogicExp ')'
     """
 
-
-def p_logicfactor_booleanexp(p):
+def p_logicnot_booleanexp(p):
     """
-    LogicFactor : BooleanExp
+    LogicNot : BooleanExp
     """
 
 
@@ -594,10 +489,29 @@ def p_optionalsemicolon_empty(p):
     OptionalSemiColon :
     """
 
-
-def p_arrayelem_id(p):
+def p_factor_primary(p):
     """
-    ArrayElem : id '[' Exp ']'
+    Factor : Primary SuffixList
+    """
+
+def p_suffix_args(p):
+    """
+    Suffix : '(' ArgsList ')'
+    """
+
+def p_suffix_exp(p):
+    """
+    Suffix : '[' Exp ']'
+    """
+
+def p_suffixlist_suffixlist(p):
+    """
+    SuffixList : SuffixList Suffix
+    """
+
+def p_suffixlist_empty(p):
+    """
+    SuffixList : 
     """
 
 def p_primary_num(p):
@@ -605,20 +519,56 @@ def p_primary_num(p):
     Primary : num
     """
 
+def p_primary_string(p):
+    """
+    Primary : string
+    """
+
+def p_primary_boolean(p):
+    """
+    Primary : boolean
+    """
+
 def p_primary_id(p):
     """
     Primary : id
     """
+    
+def p_primary_exp(p):
+    """
+    Primary : '(' Exp ')'
+    """
 
-def p_primary_func(p):
+def p_termop_plus(p):
     """
-    Primary : Func
+    TermOp : '+'
     """
 
-def p_primary_arrayelem(p):
+def p_termop_minus(p):
     """
-    Primary : ArrayElem
+    TermOp : '-'
     """
+
+def p_factorop_mult(p):
+    """
+    FactorOp : '*'
+    """
+
+def p_factorop_div(p):
+    """
+    FactorOp : '/'
+    """
+
+def p_factorop_int_div(p):
+    """
+    FactorOp : DIV
+    """
+
+def p_factorop_mod(p):
+    """
+    FactorOp : MOD
+    """
+
 
 
 
