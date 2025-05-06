@@ -91,35 +91,11 @@ Atrib : IDWrapper ':' '=' Exp
 IDWrapper : '(' IDWrapper ')'
           | Factor
 
-Exp : NumExp
-    | BooleanExp
-    | LogicExp
-
-
-NumExp : NumExp TermOp NumTerm
-       | NumTerm
-
-NumTerm : NumTerm FactorOp Factor
-        | Factor
-
 ComparationSymbol : '>'
                   | '<'
                   | '=' 
                   | '>' '='
                   | '<' '='
-
-BooleanExp : BooleanExp ComparationSymbol BooleanExp
-           | Factor
-
-LogicExp : LogicExp OR LogicTerm
-         | LogicTerm
-
-LogicTerm : LogicTerm AND LogicNot
-           | LogicNot
-
-LogicNot : NOT LogicNot
-         | '(' LogicExp ')'
-         | BooleanExp
 
 OptionalSemiColon : ';'
                   | 
@@ -145,3 +121,23 @@ FactorOp : '*'
          | '/'
          | DIV
          | MOD
+
+Exp : OrExp
+
+OrExp : OrExp OR AndExp
+      | AndExp
+
+AndExp : AndExp AND RelExp
+       | RelExp
+
+RelExp : AddExp
+       | AddExp ComparationSymbol AddExp
+
+AddExp : AddExp TermOp MulExp
+       | MulExp
+
+MulExp : MulExp FactorOp Unary
+       | Unary
+
+Unary : NOT Unary
+      | Primary SuffixList

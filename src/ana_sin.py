@@ -259,7 +259,7 @@ def p_arg_exp(p):
 
 def p_forstatement_for(p):
     """
-    FORStatement : FOR Atrib FORTo NumExp DO FORBody
+    FORStatement : FOR Atrib FORTo Exp DO FORBody
     """
 
 
@@ -348,7 +348,7 @@ def p_condition_(p):
 
 def p_condition_logicexp(p):
     """
-    Condition : LogicExp
+    Condition : Exp
     """
 
 
@@ -368,42 +368,6 @@ def p_idwrapper_factor(p):
     """
     IDWrapper : Factor
     """
-
-
-def p_exp_numexp(p):
-    """
-    Exp : NumExp
-    """
-
-
-def p_exp_logicexp(p):
-    """
-    Exp : LogicExp
-    """
-
-
-def p_numexp_numexp(p):
-    """
-    NumExp : NumExp TermOp NumTerm
-    """
-
-def p_numexp_numterm(p):
-    """
-    NumExp : NumTerm
-    """
-
-
-def p_numterm_numterm(p):
-    """
-    NumTerm : NumTerm FactorOp Factor
-    """
-
-
-def p_numterm_factor(p):
-    """
-    NumTerm : Factor
-    """
-
 
 def p_comparationsymbol_gt(p):
     """
@@ -433,50 +397,6 @@ def p_comparationsymbol_lte(p):
     """
     ComparationSymbol : '<' '='
     """
-
-
-def p_booleanexp_booleanexp(p):
-    """
-    BooleanExp : BooleanExp ComparationSymbol BooleanExp
-    """
-
-
-def p_booleanexp_factor(p):
-    """
-    BooleanExp : Factor
-    """
-
-
-def p_logicexp_logicterm(p):
-    """
-    LogicExp : LogicTerm
-    """
-
-def p_logicterm_logicterm(p):
-    """
-    LogicTerm : LogicTerm AND LogicNot
-    """
-
-def p_logicterm_logicnot(p):
-    """
-    LogicTerm : LogicNot
-    """
-
-def p_logicnot_not(p):
-    """
-    LogicNot : NOT LogicNot
-    """
-
-def p_logicnot_(p):
-    """
-    LogicNot : '(' LogicExp ')'
-    """
-
-def p_logicnot_booleanexp(p):
-    """
-    LogicNot : BooleanExp
-    """
-
 
 def p_optionalsemicolon_(p):
     """
@@ -569,7 +489,70 @@ def p_factorop_mod(p):
     FactorOp : MOD
     """
 
+def p_exp_orexp(p):
+    """
+    Exp : OrExp
+    """
 
+def p_orexp_orexp(p):
+    """
+    OrExp : OrExp OR AndExp
+    """
+
+def p_orexp_andexp(p):
+    """
+    OrExp : AndExp
+    """
+
+def p_andexp_andexp(p):
+    """
+    AndExp : AndExp AND RelExp
+    """
+
+def p_andexp_relexp(p):
+    """
+    AndExp : RelExp
+    """
+
+def p_relexp_addexp_comp(p):
+    """
+    RelExp : AddExp ComparationSymbol AddExp
+    """
+
+def p_relexp_addexp(p):
+    """
+    RelExp : AddExp
+    """
+
+def p_addexp_addexp(p):
+    """
+    AddExp : AddExp TermOp MulExp
+    """
+
+def p_addexp_mulexp(p):
+    """
+    AddExp : MulExp
+    """
+
+def p_mulexp_mulexp(p):
+    """
+    MulExp : MulExp FactorOp Unary
+    """
+
+def p_mulexp_unary(p):
+    """
+    MulExp : Unary
+    """
+
+def p_unary_not(p):
+    """
+    Unary : NOT Unary
+    """
+
+def p_unary_primary(p):
+    """
+    Unary : Primary SuffixList
+    """
 
 
 def p_error(p):
