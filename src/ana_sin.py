@@ -464,27 +464,9 @@ def p_numfactor_(p):
     """
 
 
-def p_numfactor_num(p):
+def p_numfactor_primary(p):
     """
-    NumFactor : num
-    """
-
-
-def p_numfactor_arrayelem(p):
-    """
-    NumFactor : ArrayElem
-    """
-
-
-def p_numfactor_id(p):
-    """
-    NumFactor : id
-    """
-
-
-def p_numfactor_func(p):
-    """
-    NumFactor : Func
+    NumFactor : Primary
     """
 
 
@@ -542,33 +524,14 @@ def p_booleanfactor_boolean(p):
     """
 
 
-def p_booleanfactor_num(p):
-    """
-    BooleanFactor : num
-    """
-
-
 def p_booleanfactor_string(p):
     """
     BooleanFactor : string
     """
 
-
-def p_booleanfactor_arrayelem(p):
+def p_booleanfactor_primary(p):
     """
-    BooleanFactor : ArrayElem
-    """
-
-
-def p_booleanfactor_id(p):
-    """
-    BooleanFactor : id
-    """
-
-
-def p_booleanfactor_func(p):
-    """
-    BooleanFactor : Func
+    BooleanFactor : Primary
     """
 
 
@@ -636,6 +599,27 @@ def p_arrayelem_id(p):
     """
     ArrayElem : id '[' Exp ']'
     """
+
+def p_primary_num(p):
+    """
+    Primary : num
+    """
+
+def p_primary_id(p):
+    """
+    Primary : id
+    """
+
+def p_primary_func(p):
+    """
+    Primary : Func
+    """
+
+def p_primary_arrayelem(p):
+    """
+    Primary : ArrayElem
+    """
+
 
 
 def p_error(p):

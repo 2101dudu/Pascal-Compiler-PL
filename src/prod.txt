@@ -113,11 +113,7 @@ NumTerm : NumTerm '*' NumFactor
         | NumFactor
 
 NumFactor : '(' NumExp ')'
-          | num
-          | ArrayElem
-          | id
-          | Func
-
+          | Primary
 
 ComparationSymbol : '>'
                   | '<'
@@ -130,11 +126,8 @@ BooleanExp : BooleanExp ComparationSymbol BooleanExp
 
 BooleanFactor : '(' Exp ')'
               | boolean
-              | num
               | string
-              | ArrayElem
-              | id
-              | Func
+              | Primary
 
 LogicExp : LogicExp OR LogicTerm
          | LogicTerm
@@ -152,3 +145,9 @@ OptionalSemiColon : ';'
                   | 
 
 ArrayElem : id '[' Exp ']'
+
+
+Primary : num
+        | id
+        | Func
+        | ArrayElem
