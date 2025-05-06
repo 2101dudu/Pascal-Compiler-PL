@@ -26,7 +26,6 @@ FunctionBody : BEGIN Body END ';'
 Main: OptionalVarList MainSection
 
 VarSection : VAR VarsList
-           |  
 
 VarsList : VarsList VarsListElem
          | VarsListElem
@@ -58,7 +57,6 @@ ArgsList : ArgsList ',' Arg
          | 
 
 Arg : '(' Arg ')'
-    | string
     | Exp
 
 
@@ -84,10 +82,7 @@ WHILEBody : BEGIN Body END OptionalSemiColon
 Condition : '(' Condition ')'
           | LogicExp
 
-Atrib : IDWrapper ':' '=' Exp
-
-IDWrapper : '(' IDWrapper ')'
-          | Factor
+Atrib : id SuffixListArray ':' '=' Exp
 
 ComparationSymbol : '>'
                   | '<'
@@ -100,11 +95,14 @@ OptionalSemiColon : ';'
 
 Factor : Primary SuffixList
 
+SuffixList : SuffixList Suffix
+           | 
+
 Suffix : '(' ArgsList ')'
        | '[' Exp ']'
 
-SuffixList : SuffixList Suffix
-           | 
+SuffixListArray : '[' Exp ']' SuffixListArray
+                | 
 
 Primary : num
         | string
@@ -138,4 +136,4 @@ MulExp : MulExp FactorOp Unary
        | Unary
 
 Unary : NOT Unary
-      | Primary SuffixList
+      | Factor

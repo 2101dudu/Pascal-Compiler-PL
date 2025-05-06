@@ -88,11 +88,6 @@ def p_varsection_var(p):
     VarSection : VAR VarsList
     """
 
-def p_varsection_(p):
-    """
-    VarSection : 
-    """
-
 def p_varslist_varslist(p):
     """
     VarsList : VarsList VarsListElem
@@ -198,11 +193,6 @@ def p_arg_(p):
     Arg : '(' Arg ')'
     """
 
-def p_arg_string(p):
-    """
-    Arg : string
-    """
-
 def p_arg_exp(p):
     """
     Arg : Exp
@@ -278,9 +268,9 @@ def p_condition_logicexp(p):
     Condition : LogicExp
     """
 
-def p_atrib_idwrapper(p):
+def p_atrib_id(p):
     """
-    Atrib : IDWrapper ':' '=' Exp
+    Atrib : id SuffixListArray ':' '=' Exp
     """
 
 def p_idwrapper_(p):
@@ -288,9 +278,9 @@ def p_idwrapper_(p):
     IDWrapper : '(' IDWrapper ')'
     """
 
-def p_idwrapper_factor(p):
+def p_idwrapper_id(p):
     """
-    IDWrapper : Factor
+    IDWrapper : id SuffixListArray
     """
 
 def p_comparationsymbol_(p):
@@ -333,6 +323,16 @@ def p_factor_primary(p):
     Factor : Primary SuffixList
     """
 
+def p_suffixlist_suffixlist(p):
+    """
+    SuffixList : SuffixList Suffix
+    """
+
+def p_suffixlist_(p):
+    """
+    SuffixList : 
+    """
+
 def p_suffix_(p):
     """
     Suffix : '(' ArgsList ')'
@@ -343,14 +343,14 @@ def p_suffix_(p):
     Suffix : '[' Exp ']'
     """
 
-def p_suffixlist_suffixlist(p):
+def p_suffixlistarray_(p):
     """
-    SuffixList : SuffixList Suffix
+    SuffixListArray : '[' Exp ']' SuffixListArray
     """
 
-def p_suffixlist_(p):
+def p_suffixlistarray_(p):
     """
-    SuffixList : 
+    SuffixListArray : 
     """
 
 def p_primary_num(p):
@@ -468,8 +468,8 @@ def p_unary_not(p):
     Unary : NOT Unary
     """
 
-def p_unary_primary(p):
+def p_unary_factor(p):
     """
-    Unary : Primary SuffixList
+    Unary : Factor
     """
 
