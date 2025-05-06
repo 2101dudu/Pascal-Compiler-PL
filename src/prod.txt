@@ -1,28 +1,32 @@
-Program : PROGRAM id ';' FunctionList Main
+Program : PROGRAM id ';' OptionalVarList FunctionList Main
+
+OptionalVarList : VarSection
+                | 
 
 FunctionList : FunctionList FunctionListElem
              | FunctionListElem
-             | DONTFORGETTOREMOVE
+             | 
 
-FunctionListElem : FUNCTION FuncDefinition ':' id ';' VarSection FunctionBody
+FunctionListElem : FUNCTION FuncDefinition ':' id ';' OptionalVarList FunctionBody
+                 | PROCEDURE FuncDefinition ';' OptionalVarList FunctionBody
 
 FuncDefinition : id Parameters
               
 Parameters : '(' PairList ')'
-           | DONTFORGETTOREMOVE
+           | 
 
 PairList : PairList ';' PairListElem
          | PairListElem
-         | DONTFORGETTOREMOVE
+         | 
 
 PairListElem : id ':' id
 
 FunctionBody : BEGIN Body END ';'
 
-Main: VarSection MainSection
+Main: OptionalVarList MainSection
 
 VarSection : VAR VarsList
-           | DONTFORGETTOREMOVE 
+           |  
 
 VarsList : VarsList VarsListElem
          | VarsListElem
@@ -33,7 +37,7 @@ VarType : id
         | ARRAY ArrayIndexes OF id
 
 ArrayIndexes : '[' num '.' '.' num ']'
-             | DONTFORGETTOREMOVE
+             | 
 
 VarsListElemIDs : VarsListElemIDs ',' id
                 | id
@@ -44,16 +48,19 @@ Body : Body BodyElem
      | BodyElem 
 
 BodyElem : Func OptionalSemiColon
-                    | Atrib OptionalSemiColon
-                    | FORStatement OptionalSemiColon
-                    | IFStatement OptionalSemiColon
-                    | WHILEStatement OptionalSemiColon
+         | Atrib OptionalSemiColon
+         | FORStatement OptionalSemiColon
+         | IFStatement OptionalSemiColon
+         | WHILEStatement OptionalSemiColon
 
-Func : id '(' ArgsList ')' 
+Func : id ArgSection
+
+ArgSection : '(' ArgsList ')'
+           |
 
 ArgsList : ArgsList ',' Arg
          | Arg
-         | DONTFORGETTOREMOVE
+         | 
 
 Arg : '(' Arg ')'
     | string
@@ -69,8 +76,11 @@ FORBody : FORStatement
         | BEGIN Body END OptionalSemiColon
         | BodyElem
 
-IFStatement : IF Condition THEN BodyElem ELSE BodyElem
-            | IF Condition THEN BodyElem
+IFStatement : IF Condition THEN IFBody ELSE IFBody
+            | IF Condition THEN IFBody
+
+IFBody : BEGIN Body END OptionalSemiColon
+       | BodyElem
 
 WHILEStatement : WHILE Condition DO WHILEBody
 
@@ -81,14 +91,11 @@ WHILEBody : WHILEStatement
 Condition : '(' Condition ')'
           | LogicExp
 
-Atrib : IDWrapper ':' '=' AtribVal
+Atrib : IDWrapper ':' '=' Exp
 
 IDWrapper : '(' IDWrapper ')'
           | ArrayElem
           | id
-
-AtribVal : Exp
-         | Func
 
 Exp : NumExp
     | BooleanExp
@@ -109,6 +116,7 @@ NumFactor : '(' NumExp ')'
           | num
           | ArrayElem
           | id
+          | Func
 
 
 ComparationSymbol : '>'
@@ -126,6 +134,7 @@ BooleanFactor : '(' Exp ')'
               | string
               | ArrayElem
               | id
+              | Func
 
 LogicExp : LogicExp OR LogicTerm
          | LogicTerm
@@ -140,6 +149,6 @@ LogicFactor : '(' LogicExp ')'
             | BooleanExp
 
 OptionalSemiColon : ';'
-                  | DONTFORGETTOREMOVE
+                  | 
 
-ArrayElem : id '[' id ']'
+ArrayElem : id '[' Exp ']'

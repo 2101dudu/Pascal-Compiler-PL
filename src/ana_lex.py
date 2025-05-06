@@ -1,10 +1,10 @@
 import ply.lex as lex
 
 literals = ['(', ')', ';', '.', ',', ':',
-            '{', '}', '>', '<', '=', '*', '+', '[', ']']
+            '{', '}', '>', '<', '=', '*', '+', '-', '[', ']']
 
 tokens = (
-    'PROGRAM', 'VAR', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'FOR', 'TO', 'DO', 'WHILE', 'DIV', 'MOD', 'AND', 'OR', 'NOT', 'ARRAY', 'OF', 'DOWNTO', 'FUNCTION',
+    'PROGRAM', 'VAR', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'FOR', 'TO', 'DO', 'WHILE', 'DIV', 'MOD', 'AND', 'OR', 'NOT', 'ARRAY', 'OF', 'DOWNTO', 'FUNCTION', 'PROCEDURE',
     'id', 'string', 'num', 'boolean'
 )
 
@@ -13,8 +13,14 @@ def t_PROGRAM(t):
     r'program'
     return t
 
+
 def t_FUNCTION(t):
     r'function'
+    return t
+
+
+def t_PROCEDURE(t):
+    r'procedure'
     return t
 
 
