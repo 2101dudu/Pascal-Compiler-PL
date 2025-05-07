@@ -4,15 +4,14 @@ from ana_lex import tokens
 from ana_lex import literals
 from gen import gen_code
 
-from AST.tree import Node
+from AST.tree import ASTNode
 
 
 def p_program_program(p):
     """
     Program : PROGRAM id ';' OptionalVarList FunctionList Main
     """
-    p[0] = Node("program", [p[2], p[4], Node("functionlist", p[5]), p[6]])
-
+    p[0] = ASTNode("program", [p[2], p[4], ASTNode("functionlist", p[5]), p[6]])
 
 def p_optionalvarlist_varsection(p):
     """
@@ -52,28 +51,28 @@ def p_functionlistelem_function(p):
     """
     FunctionListElem : FUNCTION FuncDefinition ':' id ';' OptionalVarList FunctionBody
     """
-    p[0] = Node("function", [p[2], p[4], p[6], p[7]])
+    p[0] = ASTNode("function", [p[2], p[4], p[6], p[7]])
 
 
 def p_functionlistelem_procedure(p):
     """
     FunctionListElem : PROCEDURE FuncDefinition ';' OptionalVarList FunctionBody
     """
-    p[0] = Node("procedure", [p[2], p[4], p[5]])
+    p[0] = ASTNode("procedure", [p[2], p[4], p[5]])
 
 
 def p_funcdefinition_id(p):
     """
     FuncDefinition : id Parameters
     """
-    p[0] = Node("function", [p[1], p[2]])
+    p[0] = ASTNode("function", [p[1], p[2]])
 
 
 def p_parameters_(p):
     """
     Parameters : '(' PairList ')'
     """
-    p[0] = Node("params", p[2])
+    p[0] = ASTNode("params", p[2])
 
 
 def p_parameters_empty(p):
@@ -106,28 +105,28 @@ def p_pairlistelem_id(p):
     """
     PairListElem : id ':' id
     """
-    p[0] = Node("pair", [p[1], p[3]])
+    p[0] = ASTNode("pair", [p[1], p[3]])
 
 
 def p_functionbody_begin(p):
     """
     FunctionBody : BEGIN Body OptionalSemiColon END ';'
     """
-    p[0] = Node("body", p[2])
+    p[0] = ASTNode("body", p[2])
 
 
 def p_main_varsection(p):
     """
     Main : OptionalVarList MainSection
     """
-    p[0] = Node("main", [p[1], p[2]])
+    p[0] = ASTNode("main", [p[1], p[2]])
 
 
 def p_varsection_var(p):
     """
     VarSection : VAR VarsList
     """
-    p[0] = Node("varsection", p[2])
+    p[0] = ASTNode("varsection", p[2])
 
 
 def p_varslist_varslist(p):
@@ -148,7 +147,7 @@ def p_varslistelem_varslistelemids(p):
     """
     VarsListElem : VarsListElemIDs ':' VarType ';'
     """
-    p[0] = Node("var", [Node("varIds", p[1]), p[3]])
+    p[0] = ASTNode("var", [ASTNode("varIds", p[1]), p[3]])
 
 
 def p_vartype_id(p):
@@ -162,14 +161,14 @@ def p_vartype_array(p):
     """
     VarType : ARRAY ArrayIndexes OF id
     """
-    p[0] = Node("array", [p[2], p[4]])
+    p[0] = ASTNode("array", [p[2], p[4]])
 
 
 def p_arrayindexes_(p):
     """
     ArrayIndexes : '[' num '.' '.' num ']'
     """
-    p[0] = Node("arrayindexes", [p[2], p[5]])
+    p[0] = ASTNode("arrayindexes", [p[2], p[5]])
 
 
 def p_arrayindexes_empty(p):
@@ -195,7 +194,7 @@ def p_mainsection_begin(p):
     """
     MainSection : BEGIN Body OptionalSemiColon END '.' 
     """
-    p[0] = Node("body", p[2])
+    p[0] = ASTNode("body", p[2])
 
 
 def p_body_body(p):
@@ -280,7 +279,7 @@ def p_forstatement_for(p):
     """
     FORStatement : FOR Atrib FORTo Exp DO FORBody
     """
-    p[0] = Node("for", [p[2], p[4], p[6]])
+    p[0] = ASTNode("for", [p[2], p[4], p[6]])
 
 
 def p_forto_to(p):
@@ -298,7 +297,7 @@ def p_forbody_begin(p):
     """
     FORBody : BEGIN Body OptionalSemiColon END
     """
-    p[0] = Node("body", p[2])
+    p[0] = ASTNode("body", p[2])
 
 
 def p_forbody_bodyelem(p):
@@ -312,7 +311,7 @@ def p_ifstatement_if(p):
     """
     IFStatement : IF Condition THEN IFBody IFStatementCont
     """
-    p[0] = Node("if", [p[2], p[4], p[5]])
+    p[0] = ASTNode("if", [p[2], p[4], p[5]])
 
 
 def p_ifstatementcont_else(p):
@@ -331,7 +330,7 @@ def p_ifbody_begin(p):
     """
     IFBody : BEGIN Body OptionalSemiColon END
     """
-    p[0] = Node("body", p[2])
+    p[0] = ASTNode("body", p[2])
 
 def p_ifbody_bodyelem(p):
     """
@@ -343,14 +342,14 @@ def p_whilestatement_while(p):
     """
     WHILEStatement : WHILE Condition DO WHILEBody
     """
-    p[0] = Node("while", [p[2], p[4]])
+    p[0] = ASTNode("while", [p[2], p[4]])
 
 
 def p_whilebody_begin(p):
     """
     WHILEBody : BEGIN Body OptionalSemiColon END
     """
-    p[0] = Node("body", p[2])
+    p[0] = ASTNode("body", p[2])
 
 
 def p_whilebody_bodyelem(p):
@@ -378,7 +377,7 @@ def p_atrib_suffixlistarray(p):
     """
     Atrib : id SuffixListArray ':' '=' Exp
     """
-    p[0] = Node("Atrib", [Node("Var", [p[1], p[2]]) , p[5]])
+    p[0] = ASTNode("Atrib", [ASTNode("Var", [p[1], p[2]]) , p[5]])
 
 
 def p_comparationsymbol_gt(p):
@@ -429,7 +428,7 @@ def p_factor_primary(p):
     """
     Factor : Primary SuffixList
     """
-    p[0] = Node("Factor", [p[1], p[2]])
+    p[0] = ASTNode("Factor", [p[1], ASTNode("suffix list", p[2])])
 
 def p_suffixlist_suffixlist(p):
     """
@@ -447,13 +446,13 @@ def p_suffix_(p):
     """
     Suffix : '(' ArgsList ')'
     """
-    p[0] = [p[2]]
+    p[0] = ASTNode("arg list", p[2])
 
 def p_suffix_exp(p):
     """
     Suffix : '[' Exp ']'
     """
-    p[0] = [p[2]]
+    p[0] = p[2]
 
 def p_suffixlistarray_arr(p):
     """
@@ -495,7 +494,7 @@ def p_primary_exp(p):
     """
     Primary : '(' Exp ')'
     """
-    p[0] = Node("Exp", [p[2]])
+    p[0] = ASTNode("Exp", [p[2]])
 
 def p_termop_plus(p):
     """
@@ -543,7 +542,7 @@ def p_orexp_orexp(p):
     """
     OrExp : OrExp OR AndExp
     """
-    p[0] = Node("or", [p[1], p[3]])
+    p[0] = ASTNode("or", [p[1], p[3]])
 
 def p_orexp_andexp(p):
     """
@@ -555,7 +554,7 @@ def p_andexp_andexp(p):
     """
     AndExp : AndExp AND RelExp
     """
-    p[0] = Node("and", [p[1], p[3]])
+    p[0] = ASTNode("and", [p[1], p[3]])
 
 def p_andexp_relexp(p):
     """
@@ -567,7 +566,7 @@ def p_relexp_addexp_comp(p):
     """
     RelExp : AddExp ComparationSymbol AddExp
     """
-    p[0] = Node(p[2], [p[1], p[3]])
+    p[0] = ASTNode(p[2], [p[1], p[3]])
 
 def p_relexp_addexp(p):
     """
@@ -579,7 +578,7 @@ def p_addexp_addexp(p):
     """
     AddExp : AddExp TermOp MulExp
     """
-    p[0] = Node(p[2], [p[1], p[3]])
+    p[0] = ASTNode(p[2], [p[1], p[3]])
 
 def p_addexp_mulexp(p):
     """
@@ -591,7 +590,7 @@ def p_mulexp_mulexp(p):
     """
     MulExp : MulExp FactorOp Unary
     """
-    p[0] = Node("MulExp", [p[1], p[2], p[3]])
+    p[0] = ASTNode("MulExp", [p[1], p[2], p[3]])
 
 def p_mulexp_unary(p):
     """
@@ -603,7 +602,7 @@ def p_unary_not(p):
     """
     Unary : NOT Unary
     """
-    p[0] = Node("not", p[2])
+    p[0] = ASTNode("not", p[2])
 
 def p_unary_primary(p):
     """
@@ -623,11 +622,19 @@ def p_error(p):
 
 parser = yacc.yacc()
 
-texto = sys.stdin.read()
-parser.success = True
-parser.parse(texto)
+#texto = sys.stdin.read()
+#parser.success = True
+#parser.parse(texto)
+#
+#if parser.success:
+#    print(f"Texto válido.\n")
+#else:
+#    print("Texto inválido...")
 
-if parser.success:
-    print(f"Texto válido.\n")
-else:
-    print("Texto inválido...")
+def parse_pascal(text):
+    parser.success = True
+    result = parser.parse(text)
+    if parser.success:
+        return result
+    else:
+        raise ValueError("Parsing failed.")

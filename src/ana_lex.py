@@ -136,7 +136,7 @@ def t_id(t):
     return t
 
 
-t_ignore = ' \t\n'
+t_ignore = ' \t\n\r'
 t_ignore_COMMENT = r'{.*}'
 
 
