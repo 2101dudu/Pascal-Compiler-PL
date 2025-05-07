@@ -97,7 +97,7 @@ def p_pairlistelem_id(p):
 
 def p_functionbody_begin(p):
     """
-    FunctionBody : BEGIN Body END ';'
+    FunctionBody : BEGIN Body OptionalSemiColon END ';'
     """
 
 
@@ -169,13 +169,13 @@ def p_varslistelemids_id(p):
 
 def p_mainsection_begin(p):
     """
-    MainSection : BEGIN Body END '.'
+    MainSection : BEGIN Body OptionalSemiColon END '.' 
     """
 
 
 def p_body_body(p):
     """
-    Body : Body BodyElem
+    Body : Body ';' BodyElem
     """
 
 
@@ -187,31 +187,31 @@ def p_body_bodyelem(p):
 
 def p_bodyelem_factor(p):
     """
-    BodyElem : Factor OptionalSemiColon
+    BodyElem : Factor
     """
 
 
 def p_bodyelem_atrib(p):
     """
-    BodyElem : Atrib OptionalSemiColon
+    BodyElem : Atrib
     """
 
 
 def p_bodyelem_forstatement(p):
     """
-    BodyElem : FORStatement OptionalSemiColon
+    BodyElem : FORStatement
     """
 
 
 def p_bodyelem_ifstatement(p):
     """
-    BodyElem : IFStatement OptionalSemiColon
+    BodyElem : IFStatement
     """
 
 
 def p_bodyelem_whilestatement(p):
     """
-    BodyElem : WHILEStatement OptionalSemiColon
+    BodyElem : WHILEStatement
     """
 
 
@@ -263,7 +263,7 @@ def p_forto_downto(p):
 
 def p_forbody_begin(p):
     """
-    FORBody : BEGIN Body END OptionalSemiColon
+    FORBody : BEGIN Body OptionalSemiColon END
     """
 
 
@@ -275,18 +275,23 @@ def p_forbody_bodyelem(p):
 
 def p_ifstatement_if(p):
     """
-    IFStatement : IF Condition THEN IFBody ELSE IFBody
+    IFStatement : IF Condition THEN IFBody IFStatementCont
     """
 
 
-def p_ifstatement_if_single(p):
+def p_ifstatementcont_else(p):
     """
-    IFStatement : IF Condition THEN IFBody
+    IFStatementCont : ELSE IFBody
+    """
+
+def p_ifstatementcont_empty(p):
+    """
+    IFStatementCont : 
     """
 
 def p_ifbody_begin(p):
     """
-    IFBody : BEGIN Body END OptionalSemiColon
+    IFBody : BEGIN Body OptionalSemiColon END
     """
 
 def p_ifbody_bodyelem(p):
@@ -302,7 +307,7 @@ def p_whilestatement_while(p):
 
 def p_whilebody_begin(p):
     """
-    WHILEBody : BEGIN Body END OptionalSemiColon
+    WHILEBody : BEGIN Body OptionalSemiColon END
     """
 
 

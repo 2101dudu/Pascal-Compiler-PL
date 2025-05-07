@@ -21,7 +21,7 @@ PairList : PairList ';' PairListElem
 
 PairListElem : id ':' id
 
-FunctionBody : BEGIN Body END ';'
+FunctionBody : BEGIN Body OptionalSemiColon END ';'
 
 Main: OptionalVarList MainSection
 
@@ -41,16 +41,16 @@ ArrayIndexes : '[' num '.' '.' num ']'
 VarsListElemIDs : VarsListElemIDs ',' id
                 | id
 
-MainSection : BEGIN Body END '.'
+MainSection : BEGIN Body OptionalSemiColon END '.'
 
-Body : Body BodyElem
-     | BodyElem 
+Body : Body ';' BodyElem
+     | BodyElem
 
-BodyElem : Factor OptionalSemiColon
-         | Atrib OptionalSemiColon
-         | FORStatement OptionalSemiColon
-         | IFStatement OptionalSemiColon
-         | WHILEStatement OptionalSemiColon
+BodyElem : Factor
+         | Atrib
+         | FORStatement
+         | IFStatement
+         | WHILEStatement
 
 ArgsList : ArgsList ',' Arg
          | Arg
@@ -65,18 +65,18 @@ FORStatement : FOR Atrib FORTo NumExp DO FORBody
 FORTo : TO
       | DOWNTO
 
-FORBody : BEGIN Body END OptionalSemiColon
+FORBody : BEGIN Body OptionalSemiColon END
         | BodyElem
 
 IFStatement : IF Condition THEN IFBody ELSE IFBody
             | IF Condition THEN IFBody
 
-IFBody : BEGIN Body END OptionalSemiColon
+IFBody : BEGIN Body OptionalSemiColon END
        | BodyElem
 
 WHILEStatement : WHILE Condition DO WHILEBody
 
-WHILEBody : BEGIN Body END OptionalSemiColon
+WHILEBody : BEGIN Body OptionalSemiColon END
           | BodyElem
 
 Condition : '(' Condition ')'
