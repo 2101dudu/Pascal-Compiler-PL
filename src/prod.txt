@@ -26,7 +26,6 @@ FunctionBody : BEGIN Body END ';'
 Main: OptionalVarList MainSection
 
 VarSection : VAR VarsList
-           |  
 
 VarsList : VarsList VarsListElem
          | VarsListElem
@@ -47,23 +46,17 @@ MainSection : BEGIN Body END '.'
 Body : Body BodyElem
      | BodyElem 
 
-BodyElem : Func OptionalSemiColon
+BodyElem : Factor OptionalSemiColon
          | Atrib OptionalSemiColon
          | FORStatement OptionalSemiColon
          | IFStatement OptionalSemiColon
          | WHILEStatement OptionalSemiColon
-
-Func : id ArgSection
-
-ArgSection : '(' ArgsList ')'
-           |
 
 ArgsList : ArgsList ',' Arg
          | Arg
          | 
 
 Arg : '(' Arg ')'
-    | string
     | Exp
 
 
@@ -72,8 +65,7 @@ FORStatement : FOR Atrib FORTo NumExp DO FORBody
 FORTo : TO
       | DOWNTO
 
-FORBody : FORStatement
-        | BEGIN Body END OptionalSemiColon
+FORBody : BEGIN Body END OptionalSemiColon
         | BodyElem
 
 IFStatement : IF Condition THEN IFBody ELSE IFBody
@@ -84,40 +76,13 @@ IFBody : BEGIN Body END OptionalSemiColon
 
 WHILEStatement : WHILE Condition DO WHILEBody
 
-WHILEBody : WHILEStatement
-          | BEGIN Body END OptionalSemiColon
+WHILEBody : BEGIN Body END OptionalSemiColon
           | BodyElem
 
 Condition : '(' Condition ')'
           | LogicExp
 
-Atrib : IDWrapper ':' '=' Exp
-
-IDWrapper : '(' IDWrapper ')'
-          | ArrayElem
-          | id
-
-Exp : NumExp
-    | BooleanExp
-    | LogicExp
-
-
-NumExp : NumExp '+' NumTerm
-       | NumExp '-' NumTerm
-       | NumTerm
-
-NumTerm : NumTerm '*' NumFactor
-        | NumTerm '/' NumFactor
-        | NumTerm DIV NumFactor
-        | NumTerm MOD NumFactor
-        | NumFactor
-
-NumFactor : '(' NumExp ')'
-          | num
-          | ArrayElem
-          | id
-          | Func
-
+Atrib : id SuffixListArray ':' '=' Exp
 
 ComparationSymbol : '>'
                   | '<'
@@ -125,30 +90,50 @@ ComparationSymbol : '>'
                   | '>' '='
                   | '<' '='
 
-BooleanExp : BooleanExp ComparationSymbol BooleanExp
-           | BooleanFactor
-
-BooleanFactor : '(' Exp ')'
-              | boolean
-              | num
-              | string
-              | ArrayElem
-              | id
-              | Func
-
-LogicExp : LogicExp OR LogicTerm
-         | LogicTerm
-
-LogicTerm : LogicTerm AND LogicNot
-          | LogicNot
-
-LogicNot : NOT LogicFactor
-         | LogicFactor
-
-LogicFactor : '(' LogicExp ')'
-            | BooleanExp
-
 OptionalSemiColon : ';'
                   | 
 
-ArrayElem : id '[' Exp ']'
+Factor : Primary SuffixList
+
+SuffixList : SuffixList Suffix
+           | 
+
+Suffix : '(' ArgsList ')'
+       | '[' Exp ']'
+
+SuffixListArray : '[' Exp ']' SuffixListArray
+                | 
+
+Primary : num
+        | string
+        | boolean
+        | id
+        | '(' Exp ')'
+    
+TermOp : '+'
+       | '-'
+
+FactorOp : '*'
+         | '/'
+         | DIV
+         | MOD
+
+Exp : OrExp
+
+OrExp : OrExp OR AndExp
+      | AndExp
+
+AndExp : AndExp AND RelExp
+       | RelExp
+
+RelExp : AddExp ComparationSymbol AddExp
+       | AddExp
+
+AddExp : AddExp TermOp MulExp
+       | MulExp
+
+MulExp : MulExp FactorOp Unary
+       | Unary
+
+Unary : NOT Unary
+      | Factor

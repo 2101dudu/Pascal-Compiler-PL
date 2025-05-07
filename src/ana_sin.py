@@ -113,12 +113,6 @@ def p_varsection_var(p):
     """
 
 
-def p_varsection_empty(p):
-    """
-    VarSection :
-    """
-
-
 def p_varslist_varslist(p):
     """
     VarsList : VarsList VarsListElem
@@ -191,9 +185,9 @@ def p_body_bodyelem(p):
     """
 
 
-def p_bodyelem_func(p):
+def p_bodyelem_factor(p):
     """
-    BodyElem : Func OptionalSemiColon
+    BodyElem : Factor OptionalSemiColon
     """
 
 
@@ -221,22 +215,6 @@ def p_bodyelem_whilestatement(p):
     """
 
 
-def p_func_id(p):
-    """
-    Func : id ArgSection
-    """
-
-def p_argsection(p):
-    """
-    ArgSection : '(' ArgsList ')'
-    """
-
-def p_argsection_empty(p):
-    """
-    ArgSection :
-    """
-
-
 def p_argslist_argslist(p):
     """
     ArgsList : ArgsList ',' Arg
@@ -260,13 +238,6 @@ def p_arg_(p):
     Arg : '(' Arg ')'
     """
 
-
-def p_arg_string(p):
-    """
-    Arg : string
-    """
-
-
 def p_arg_exp(p):
     """
     Arg : Exp
@@ -275,7 +246,7 @@ def p_arg_exp(p):
 
 def p_forstatement_for(p):
     """
-    FORStatement : FOR Atrib FORTo NumExp DO FORBody
+    FORStatement : FOR Atrib FORTo Exp DO FORBody
     """
 
 
@@ -289,13 +260,6 @@ def p_forto_downto(p):
     """
     FORTo : DOWNTO
     """
-
-
-def p_forbody_forstatement(p): ## Necessário?
-    """
-    FORBody : FORStatement
-    """
-
 
 def p_forbody_begin(p):
     """
@@ -320,7 +284,6 @@ def p_ifstatement_if_single(p):
     IFStatement : IF Condition THEN IFBody
     """
 
-################## Exatamente igual ao FORBody (mentemos?)
 def p_ifbody_begin(p):
     """
     IFBody : BEGIN Body END OptionalSemiColon
@@ -330,17 +293,10 @@ def p_ifbody_bodyelem(p):
     """
     IFBody : BodyElem
     """
-##########################################################
 
 def p_whilestatement_while(p):
     """
     WHILEStatement : WHILE Condition DO WHILEBody
-    """
-
-
-def p_whilebody_whilestatement(p):
-    """
-    WHILEBody : WHILEStatement
     """
 
 
@@ -364,127 +320,13 @@ def p_condition_(p):
 
 def p_condition_logicexp(p):
     """
-    Condition : LogicExp
+    Condition : Exp
     """
 
 
-def p_atrib_idwrapper(p):
+def p_atrib_suffixlistarray(p):
     """
-    Atrib : IDWrapper ':' '=' Exp
-    """
-
-
-def p_idwrapper_(p):
-    """
-    IDWrapper : '(' IDWrapper ')'
-    """
-
-
-def p_idwrapper_arrayelem(p):
-    """
-    IDWrapper : ArrayElem
-    """
-
-
-def p_idwrapper_id(p):
-    """
-    IDWrapper : id
-    """
-
-
-def p_exp_numexp(p):
-    """
-    Exp : NumExp
-    """
-
-
-def p_exp_booleanexp(p):
-    """
-    Exp : BooleanExp
-    """
-
-
-def p_exp_logicexp(p):
-    """
-    Exp : LogicExp
-    """
-
-
-def p_numexp_numexp_add(p):
-    """
-    NumExp : NumExp '+' NumTerm
-    """
-
-
-def p_numexp_numexp_sub(p):
-    """
-    NumExp : NumExp '-' NumTerm
-    """
-
-
-def p_numexp_numterm(p):
-    """
-    NumExp : NumTerm
-    """
-
-
-def p_numterm_numterm_mul(p):
-    """
-    NumTerm : NumTerm '*' NumFactor
-    """
-
-
-def p_numterm_numterm_div(p):
-    """
-    NumTerm : NumTerm '/' NumFactor
-    """
-
-
-def p_numterm_numterm_whole_div(p):
-    """
-    NumTerm : NumTerm DIV NumFactor
-    """
-
-
-def p_numterm_numterm(p):
-    """
-    NumTerm : NumTerm MOD NumFactor
-    """
-
-
-def p_numterm_numfactor(p):
-    """
-    NumTerm : NumFactor
-    """
-
-
-def p_numfactor_(p):
-    """
-    NumFactor : '(' NumExp ')'
-    """
-
-
-def p_numfactor_num(p):
-    """
-    NumFactor : num
-    """
-
-
-def p_numfactor_arrayelem(p):
-    """
-    NumFactor : ArrayElem
-    """
-
-
-def p_numfactor_id(p):
-    """
-    NumFactor : id
-    """
-
-
-def p_numfactor_func(p):
-    """
-    NumFactor : Func
+    Atrib : id SuffixListArray ':' '=' Exp
     """
 
 
@@ -517,109 +359,6 @@ def p_comparationsymbol_lte(p):
     ComparationSymbol : '<' '='
     """
 
-
-def p_booleanexp_booleanexp(p):
-    """
-    BooleanExp : BooleanExp ComparationSymbol BooleanExp
-    """
-
-
-def p_booleanexp_booleanfactor(p):
-    """
-    BooleanExp : BooleanFactor
-    """
-
-
-def p_booleanfactor_(p):
-    """
-    BooleanFactor : '(' Exp ')'
-    """
-
-
-def p_booleanfactor_boolean(p):
-    """
-    BooleanFactor : boolean
-    """
-
-
-def p_booleanfactor_num(p):
-    """
-    BooleanFactor : num
-    """
-
-
-def p_booleanfactor_string(p):
-    """
-    BooleanFactor : string
-    """
-
-
-def p_booleanfactor_arrayelem(p):
-    """
-    BooleanFactor : ArrayElem
-    """
-
-
-def p_booleanfactor_id(p):
-    """
-    BooleanFactor : id
-    """
-
-
-def p_booleanfactor_func(p):
-    """
-    BooleanFactor : Func
-    """
-
-
-def p_logicexp_logicexp(p):
-    """
-    LogicExp : LogicExp OR LogicTerm
-    """
-
-
-def p_logicexp_logicterm(p):
-    """
-    LogicExp : LogicTerm
-    """
-
-
-def p_logicterm_logicterm(p):
-    """
-    LogicTerm : LogicTerm AND LogicNot
-    """
-
-
-def p_logicterm_logicnot(p):
-    """
-    LogicTerm : LogicNot
-    """
-
-
-def p_logicnot_not(p):
-    """
-    LogicNot : NOT LogicFactor
-    """
-
-
-def p_logicnot_logicfactor(p):
-    """
-    LogicNot : LogicFactor
-    """
-
-
-def p_logicfactor_(p):
-    """
-    LogicFactor : '(' LogicExp ')'
-    """
-
-
-def p_logicfactor_booleanexp(p):
-    """
-    LogicFactor : BooleanExp
-    """
-
-
 def p_optionalsemicolon_(p):
     """
     OptionalSemiColon : ';'
@@ -631,10 +370,158 @@ def p_optionalsemicolon_empty(p):
     OptionalSemiColon :
     """
 
-
-def p_arrayelem_id(p):
+def p_factor_primary(p):
     """
-    ArrayElem : id '[' Exp ']'
+    Factor : Primary SuffixList
+    """
+def p_suffixlist_suffixlist(p):
+    """
+    SuffixList : SuffixList Suffix
+    """
+
+def p_suffixlist_(p):
+    """
+    SuffixList : 
+    """
+
+def p_suffix_(p):
+    """
+    Suffix : '(' ArgsList ')'
+    """
+
+def p_suffix_exp(p):
+    """
+    Suffix : '[' Exp ']'
+    """
+
+def p_suffixlistarray_arr(p):
+    """
+    SuffixListArray : '[' Exp ']' SuffixListArray
+    """
+
+def p_suffixlistarray_(p):
+    """
+    SuffixListArray : 
+    """
+
+def p_primary_num(p):
+    """
+    Primary : num
+    """
+
+def p_primary_string(p):
+    """
+    Primary : string
+    """
+
+def p_primary_boolean(p):
+    """
+    Primary : boolean
+    """
+
+def p_primary_id(p):
+    """
+    Primary : id
+    """
+    
+def p_primary_exp(p):
+    """
+    Primary : '(' Exp ')'
+    """
+
+def p_termop_plus(p):
+    """
+    TermOp : '+'
+    """
+
+def p_termop_minus(p):
+    """
+    TermOp : '-'
+    """
+
+def p_factorop_mult(p):
+    """
+    FactorOp : '*'
+    """
+
+def p_factorop_div(p):
+    """
+    FactorOp : '/'
+    """
+
+def p_factorop_int_div(p):
+    """
+    FactorOp : DIV
+    """
+
+def p_factorop_mod(p):
+    """
+    FactorOp : MOD
+    """
+
+def p_exp_orexp(p):
+    """
+    Exp : OrExp
+    """
+
+def p_orexp_orexp(p):
+    """
+    OrExp : OrExp OR AndExp
+    """
+
+def p_orexp_andexp(p):
+    """
+    OrExp : AndExp
+    """
+
+def p_andexp_andexp(p):
+    """
+    AndExp : AndExp AND RelExp
+    """
+
+def p_andexp_relexp(p):
+    """
+    AndExp : RelExp
+    """
+
+def p_relexp_addexp_comp(p):
+    """
+    RelExp : AddExp ComparationSymbol AddExp
+    """
+
+def p_relexp_addexp(p):
+    """
+    RelExp : AddExp
+    """
+
+def p_addexp_addexp(p):
+    """
+    AddExp : AddExp TermOp MulExp
+    """
+
+def p_addexp_mulexp(p):
+    """
+    AddExp : MulExp
+    """
+
+def p_mulexp_mulexp(p):
+    """
+    MulExp : MulExp FactorOp Unary
+    """
+
+def p_mulexp_unary(p):
+    """
+    MulExp : Unary
+    """
+
+def p_unary_not(p):
+    """
+    Unary : NOT Unary
+    """
+
+def p_unary_primary(p):
+    """
+    Unary : Factor
     """
 
 
