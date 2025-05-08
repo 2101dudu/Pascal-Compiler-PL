@@ -9,17 +9,22 @@ def astnode_to_dict(node):
     Recursively convert an ASTNode (or list/leaf) into a JSON-serializable dict
     with a guaranteed `children` list.
     """
-    # 1) None → a dummy node
+    if isinstance(node, list):
+        raise ValueError("Expected a single ASTNode, got a list", node.pop().value)
+
     if node is None:
         return {"name": "None", "children": []}
 
-    # 2) Strings or numbers → leaves
     if isinstance(node, (str, int, float)):
         return {"name": str(node), "children": []}
 
-    # 4) Otherwise it should be your ASTNode
     name = node.value or ""
-    children = [astnode_to_dict(c) for c in node.children]
+    children = []
+    for child in node.children:
+        if isinstance(child, list):
+            raise ValueError("Expected a single ASTNode, got a list", node.value)
+        elif child is not None:
+            children.append(astnode_to_dict(child))
     return {"name": name, "children": children}
 
 

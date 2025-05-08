@@ -324,7 +324,7 @@ def p_ifstatementcont_empty(p):
     """
     IFStatementCont : 
     """
-    p[0] = []
+    p[0] = None
 
 def p_ifbody_begin(p):
     """
@@ -377,7 +377,8 @@ def p_atrib_suffixlistarray(p):
     """
     Atrib : id SuffixListArray ':' '=' Exp
     """
-    p[0] = ASTNode("Atrib", [ASTNode("Var", [p[1], p[2]]) , p[5]])
+    subnode = ASTNode("array suffix list", p[2]) if p[2] else None
+    p[0] = ASTNode("Atrib", [ASTNode("Var", [p[1], subnode]) , p[5]])
 
 
 def p_comparationsymbol_gt(p):
@@ -428,7 +429,7 @@ def p_factor_primary(p):
     """
     Factor : Primary SuffixList
     """
-    p[0] = ASTNode("Factor", [p[1], ASTNode("suffix list", p[2])])
+    p[0] = ASTNode("Factor", [p[1], ASTNode("suffix list", p[2])]) if p[2] else p[1]
 
 def p_suffixlist_suffixlist(p):
     """
