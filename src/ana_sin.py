@@ -262,7 +262,7 @@ def p_argslist_empty(p):
     p[0] = []
 
 
-def p_arg_(p):
+def p_arg_(p): # Não podia ser '(' Exp ')'?
     """
     Arg : '(' Arg ')'
     """
@@ -623,14 +623,15 @@ def p_error(p):
 
 parser = yacc.yacc()
 
-#texto = sys.stdin.read()
-#parser.success = True
-#parser.parse(texto)
-#
-#if parser.success:
-#    print(f"Texto válido.\n")
-#else:
-#    print("Texto inválido...")
+""" texto = sys.stdin.read()
+parser.success = True
+res = parser.parse(texto)
+
+if parser.success:
+    print(f"Texto válido.\n")
+else:
+    print("Texto inválido...")
+ """
 
 def parse_pascal(text):
     parser.success = True
@@ -639,3 +640,5 @@ def parse_pascal(text):
         return result
     else:
         raise ValueError("Parsing failed.")
+
+
