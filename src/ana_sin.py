@@ -2,7 +2,6 @@ import sys
 import ply.yacc as yacc
 from ana_lex import tokens
 from ana_lex import literals
-from gen import gen_code
 
 from AST.tree import ASTNode
 
