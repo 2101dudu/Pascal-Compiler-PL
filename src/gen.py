@@ -2,6 +2,9 @@ import sys
 from AST.tree import ASTNode
 
 vars_dic = {}
+while_id = 0
+for_id = 0
+if_id = 0
 
 def gen_code(node : ASTNode) -> str:
     
@@ -22,7 +25,7 @@ def gen_code(node : ASTNode) -> str:
         var_list = gen_code(node.children[1]) if len(node.children) > 1 and node.children[1] else ""
         function_list = gen_code(node.children[2]) if len(node.children) > 2 and node.children[2] else ""
         main_block = gen_code(node.children[3]) if len(node.children) > 3 and node.children[3] else ""
-        return f"// Program: {program_name}{var_list}\nstart{function_list}{main_block}\nstop\n"
+        return f"// Program: {program_name}{var_list}{function_list}{main_block}"
 
     ########## MAIN ##########
     elif node.value == "main":
@@ -35,7 +38,7 @@ def gen_code(node : ASTNode) -> str:
         return f"{varsec}{body}"
         
     elif node.value == "body":
-        return "".join(gen_code(stmt) for stmt in node.children if stmt is not None)
+        return "\nstart" + "".join(gen_code(stmt) for stmt in node.children if stmt is not None) + "\nstop"
     
     ########## FUNCTIONS ##########
     elif node.value == "functionlist":
@@ -63,7 +66,79 @@ def gen_code(node : ASTNode) -> str:
         res = "\n".join(lines)
         return f"\n{res}"
     
-    ########## Other ##########
+    ########## IF ##########
+
+    elif node.value == "if":
+        global if_id
+        label_else = f"ELSE{if_id}"
+        label_end = f"ENDIF{if_id}"
+        if_id += 1
+        condition_child = gen_code(node.children[0])
+        then_child = gen_code(node.children[1])
+        else_child = gen_code(node.children[2]) if len(node.children) > 2 and node.children[2] else ""
+
+
+        lines = []
+        lines.append(condition_child)
+        lines.append(f"\njz {label_else}")
+        lines.append(then_child)
+        lines.append(f"\njump {label_end}")
+        lines.append(f"\n{label_else}:")
+        
+        if else_child:
+            lines.append(else_child)
+        lines.append(f"\n{label_end}:")
+        
+
+        return "".join(lines)
+        
+
+    ########## CONDITION ##########
+    elif node.value in {"GT", "LT", "EQ", "NE", "GE", "LE"}:
+        op_map = {
+            "GT": "sup",
+            "LT": "inf",
+            "EQ": "equal",
+            "NE": "nequal",
+            "GE": "supeq",
+            "LE": "infeq",
+        }
+        left = node.children[0]
+        right = node.children[1]
+
+        left_code = gen_code(left) if isinstance(left, ASTNode) else f"\npushg {vars_dic[left]['index']}"
+        right_code = gen_code(right) if isinstance(right, ASTNode) else f"\npushg {vars_dic[right]['index']}"
+
+        return f"{left_code}{right_code}\n{op_map[node.value]}"
+    
+    ########## OTHER ##########
+    elif node.value == "Atrib":
+        var_node = node.children[0]
+        expr = node.children[1]
+
+        var_name = var_node.children[0]
+        var_index = vars_dic[var_name]["index"]
+
+        var_array = var_node.children[1] if len(var_node.children) > 1 else None
+        
+
+        if var_array:
+            # handle arrays
+            return ""
+        else: 
+            expr_code = ""
+            if expr in vars_dic:
+                expr_index = vars_dic[expr]["index"]
+                expr_code = f"\npushg {expr_index}"
+            else:
+                if vars_dic[var_name]["type"] == "integer":
+                    expr_code = f"\npushi {expr}"
+                if vars_dic[var_name]["type"] == "string":
+                    expr_code = f'\npushs "{expr}"'
+            
+            return f"{expr_code}\nstoreg {var_index}"
+
+
     elif node.value == "Factor":
         if len(node.children) == 0:
             return ""
@@ -76,33 +151,48 @@ def gen_code(node : ASTNode) -> str:
             list_nodes = [child for child in suffix_node.children]
             if len(list_nodes) == 1 and list_nodes[0].value == "arg list":
                 args = list_nodes[0].children
-
+                lines = []
+                ## WRITELN ##
                 if primary.lower() == "writeln":
-                    lines = []
                     for arg in args:
-                        if arg in vars_dic: # write de um valor do dicionário
-                            index = vars_dic[arg]["index"]
-                            # continuar ............
-                        else: # write de um valor literal
-                            
+                        if isinstance(arg, ASTNode):
+                            arg_code = gen_code(arg)
+                            lines.append(arg_code)
+                            lines.append("writes")
+                        elif arg in vars_dic:  # write de variável
+                            var_info = vars_dic[arg]
+                            lines.append(f"pushg {var_info['index']}")
+                            if var_info["type"].lower() == "integer":
+                                lines.append("writei")
+                            else:
+                                lines.append("writes")
+                        else:  # write de literal
                             lines.append(f'pushs "{arg}"')
-                        lines.append("writes")
+                            lines.append("writes")
                     lines.append("writeln")
                     return "\n" + "\n".join(lines)
-
+                
+                ## WRITE ##
                 elif primary.lower() == "write":
-                    lines = []
                     for arg in args:
-                        if arg in vars_dic: # write dic
-                            index = vars_dic[arg]["index"]
-                            # continuar ............
-                        else: # write literal
+                        if isinstance(arg, ASTNode):
+                            arg_code = gen_code(arg)
+                            lines.append(arg_code)
+                            lines.append("writes")
+                        elif arg in vars_dic:  # write de variável
+                            var_info = vars_dic[arg]
+                            lines.append(f"pushg {var_info['index']}")
+                            if var_info["type"].lower() == "integer":
+                                lines.append("writei")
+                            else:
+                                lines.append("writes")
+                        else:  # write de literal
                             lines.append(f'pushs "{arg}"')
-                        lines.append("writes")
+                            lines.append("writes")
                     return "\n" + "\n".join(lines)
-
+                ## READLN ##
                 elif primary.lower() == "readln":
-                    lines = []
+
                     for arg in args:
                         if arg in vars_dic:
                             var_info = vars_dic[arg]
@@ -112,7 +202,7 @@ def gen_code(node : ASTNode) -> str:
                             lines.append(f"storeg {var_info['index']}")
                             lines.append("writeln")
                     return "\n" + "\n".join(lines)
-
+            # ELSE ARRAY
         return primary
 
     
