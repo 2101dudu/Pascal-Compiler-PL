@@ -2,7 +2,6 @@ import sys
 import ply.yacc as yacc
 from ana_lex import tokens
 from ana_lex import literals
-from gen import gen_code
 
 from AST.tree import ASTNode
 
@@ -262,7 +261,7 @@ def p_argslist_empty(p):
     p[0] = []
 
 
-def p_arg_(p):
+def p_arg_(p): # Não podia ser '(' Exp ')'?
     """
     Arg : '(' Arg ')'
     """
@@ -279,19 +278,21 @@ def p_forstatement_for(p):
     """
     FORStatement : FOR Atrib FORTo Exp DO FORBody
     """
-    p[0] = ASTNode("for", [p[2], p[4], p[6]])
+    p[0] = ASTNode("for", [p[2], p[3], p[4], p[6]])
 
 
 def p_forto_to(p):
     """
     FORTo : TO
     """
+    p[0] = "to"
 
 
 def p_forto_downto(p):
     """
     FORTo : DOWNTO
     """
+    p[0] = "downto"
 
 def p_forbody_begin(p):
     """
@@ -623,14 +624,15 @@ def p_error(p):
 
 parser = yacc.yacc()
 
-#texto = sys.stdin.read()
-#parser.success = True
-#parser.parse(texto)
-#
-#if parser.success:
-#    print(f"Texto válido.\n")
-#else:
-#    print("Texto inválido...")
+""" texto = sys.stdin.read()
+parser.success = True
+res = parser.parse(texto)
+
+if parser.success:
+    print(f"Texto válido.\n")
+else:
+    print("Texto inválido...")
+ """
 
 def parse_pascal(text):
     parser.success = True
@@ -639,3 +641,5 @@ def parse_pascal(text):
         return result
     else:
         raise ValueError("Parsing failed.")
+
+
