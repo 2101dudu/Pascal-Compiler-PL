@@ -278,19 +278,21 @@ def p_forstatement_for(p):
     """
     FORStatement : FOR Atrib FORTo Exp DO FORBody
     """
-    p[0] = ASTNode("for", [p[2], p[4], p[6]])
+    p[0] = ASTNode("for", [p[2], p[3], p[4], p[6]])
 
 
 def p_forto_to(p):
     """
     FORTo : TO
     """
+    p[0] = "to"
 
 
 def p_forto_downto(p):
     """
     FORTo : DOWNTO
     """
+    p[0] = "downto"
 
 def p_forbody_begin(p):
     """

@@ -6,6 +6,15 @@ while_id = 0
 for_id = 0
 if_id = 0
 
+op_map = {
+            "GT": "sup",
+            "LT": "inf",
+            "EQ": "equal",
+            "NE": "nequal",
+            "GE": "supeq",
+            "LE": "infeq",
+}
+
 def gen_code(node : ASTNode) -> str:
     
 
@@ -25,7 +34,7 @@ def gen_code(node : ASTNode) -> str:
         var_list = gen_code(node.children[1]) if len(node.children) > 1 and node.children[1] else ""
         function_list = gen_code(node.children[2]) if len(node.children) > 2 and node.children[2] else ""
         main_block = gen_code(node.children[3]) if len(node.children) > 3 and node.children[3] else ""
-        return f"// Program: {program_name}{var_list}{function_list}{main_block}"
+        return f"// Program: {program_name}{var_list}{function_list}\nstart{main_block}\nstop"
 
     ########## MAIN ##########
     elif node.value == "main":
@@ -38,7 +47,7 @@ def gen_code(node : ASTNode) -> str:
         return f"{varsec}{body}"
         
     elif node.value == "body":
-        return "\nstart" + "".join(gen_code(stmt) for stmt in node.children if stmt is not None) + "\nstop"
+        return "".join(gen_code(stmt) for stmt in node.children if stmt is not None)
     
     ########## FUNCTIONS ##########
     elif node.value == "functionlist":
@@ -92,17 +101,63 @@ def gen_code(node : ASTNode) -> str:
 
         return "".join(lines)
         
+    ########## WHILE ##########
+    elif node.value == "for":
+        atrib = gen_code(node.children[0])
+        
+        global for_id
+        
+        label_for = f"FOR{for_id}"
+        label_end = f"ENDFOR{for_id}"
+        for_id += 1
+
+        var_name = node.children[0].children[0].children[0] # FOR -> ATRIB -> VAR -> Var name
+        var_index = vars_dic[var_name]["index"]
+
+        for_to = node.children[1]
+        
+        expr = gen_code(node.children[2])
+        expr_index = None
+        if expr in vars_dic: # check if expr is a variable
+            expr_index = vars_dic[expr]["index"]
+            expr_string = f"\npushg {expr_index}"
+        else: # check if expr is a literal
+            if vars_dic[var_name]["type"] == "integer":
+                expr_string = f"\npushi {expr}"
+            if vars_dic[var_name]["type"] == "string":
+                expr_string = f'\npushs "{expr}"'
+
+        body = gen_code(node.children[3])
+
+        cond = ""
+        if for_to == "to": 
+            cond = "inf"
+        else:
+            cond = "sup"
+        
+        lines = []
+        lines.append(f"\n{label_for}:")
+        lines.append(f"\npushg {var_index}")
+        lines.append(f"\npushi {expr_index}")
+        lines.append(f"\n{cond}")
+        lines.append(f"\njz {label_end}")
+        lines.append(body)
+        lines.append(f"\npushg {var_index}")
+        lines.append(f"\npushi 1")
+        if cond == "inf":
+            lines.append("\nadd")
+        else:
+            lines.append("\nsub")
+        lines.append(f"\nstoreg {var_index}")
+        lines.append(f"\njump {label_for}")
+        lines.append(f"\n{label_end}:")
+
+        return "".join(lines)
+
+        
 
     ########## CONDITION ##########
     elif node.value in {"GT", "LT", "EQ", "NE", "GE", "LE"}:
-        op_map = {
-            "GT": "sup",
-            "LT": "inf",
-            "EQ": "equal",
-            "NE": "nequal",
-            "GE": "supeq",
-            "LE": "infeq",
-        }
         left = node.children[0]
         right = node.children[1]
 
