@@ -8,7 +8,9 @@ if_id = 0
 
 op_map = {
             "GT": "sup",
+            "GTE": "supeq",
             "LT": "inf",
+            "LTE": "infeq",
             "EQ": "equal",
             "NE": "nequal",
             "GE": "supeq",
@@ -21,8 +23,21 @@ def gen_code(node : ASTNode) -> str:
     if node is None:
         return ""
     
-    if isinstance(node, (str, int, float, bool)):
-        return str(node)
+    if isinstance(node, int):
+        return f"\npushi {node}"
+    
+    if isinstance(node, str):
+        if node in ["true", "false"]:
+            return "\npushi 1" if node == "true" else "\npushi 0"
+
+        if node in vars_dic:
+            var_info = vars_dic[node]
+            return f"\npushg {var_info['index']}"
+        else:
+            return f'\npushs "{node}"'
+
+    if isinstance(node, float):
+        return f"\npushf {node}"
 
     if not hasattr(node, 'value') or not hasattr(node, 'children'):
                 raise ValueError(f"Expected an ASTNode, got {type(node)} instead", node)
@@ -62,12 +77,13 @@ def gen_code(node : ASTNode) -> str:
                 var_ids_node = var_decl.children[0]
                 var_type = var_decl.children[1]
 
-                var_names = [gen_code(child) for child in var_ids_node.children]
-                for i, var_name in enumerate(var_names):
+                var_names = [str(child) for child in var_ids_node.children]
+                for var_name in var_names:
                     vars_dic[var_name] = {
-                        "index": current_index + i,
+                        "index": current_index,
                         "type": var_type
                     }
+                    current_index += 1  # Increment index for each variable
 
                 if isinstance(var_type, str):
                     lines.append(f"pushn {len(var_names)}")
@@ -100,8 +116,31 @@ def gen_code(node : ASTNode) -> str:
         
 
         return "".join(lines)
-        
+
+
     ########## WHILE ##########
+    elif node.value == "while":
+        global while_id
+
+        label_while = f"WHILE{while_id}"
+        label_end = f"ENDWHILE{while_id}"
+        while_id += 1
+
+        condition_child = gen_code(node.children[0])
+        body_child = gen_code(node.children[1])
+
+        lines = []
+        lines.append(f"\n{label_while}:")
+        lines.append(condition_child)
+        lines.append(f"\njz {label_end}")
+        lines.append(body_child)
+        lines.append(f"\njump {label_while}")
+        lines.append(f"\n{label_end}:")
+
+        return "".join(lines)
+
+
+    ########## FOR ##########
     elif node.value == "for":
         atrib = gen_code(node.children[0])
         
@@ -156,20 +195,36 @@ def gen_code(node : ASTNode) -> str:
 
         
 
-    ########## CONDITION ##########
-    elif node.value in {"GT", "LT", "EQ", "NE", "GE", "LE"}:
+    ########## COMPARATION ##########
+    elif node.value in op_map:
         left = node.children[0]
         right = node.children[1]
 
-        left_code = gen_code(left) if isinstance(left, ASTNode) else f"\npushg {vars_dic[left]['index']}"
-        right_code = gen_code(right) if isinstance(right, ASTNode) else f"\npushg {vars_dic[right]['index']}"
+        left_code = gen_code(left)
+        right_code = gen_code(right)
 
         return f"{left_code}{right_code}\n{op_map[node.value]}"
+    
+    elif node.value in {"AND", "OR", "NOT"}:
+        left = node.children[0]
+        right = node.children[1] if len(node.children) > 1 else None
+        
+        if node.value == "AND":
+            left_code = gen_code(left)
+            right_code = gen_code(right)
+            return f"{left_code}{right_code}\nand"
+        elif node.value == "OR":
+            left_code = gen_code(left)
+            right_code = gen_code(right)
+            return f"{left_code}{right_code}\nor"
+        elif node.value == "NOT":
+            left_code = gen_code(left)
+            return f"{left_code}\nnot"
     
     ########## OTHER ##########
     elif node.value == "Atrib":
         var_node = node.children[0]
-        expr = node.children[1]
+        expr = gen_code(node.children[1])
 
         var_name = var_node.children[0]
         var_index = vars_dic[var_name]["index"]
@@ -181,17 +236,35 @@ def gen_code(node : ASTNode) -> str:
             # handle arrays
             return ""
         else: 
-            expr_code = ""
-            if expr in vars_dic:
-                expr_index = vars_dic[expr]["index"]
-                expr_code = f"\npushg {expr_index}"
-            else:
-                if vars_dic[var_name]["type"] == "integer":
-                    expr_code = f"\npushi {expr}"
-                if vars_dic[var_name]["type"] == "string":
-                    expr_code = f'\npushs "{expr}"'
-            
-            return f"{expr_code}\nstoreg {var_index}"
+            return f"{expr}\nstoreg {var_index}"
+
+    elif node.value in {"+", "-", "*", "/"}:
+        left = node.children[0]
+        right = node.children[1]
+
+        left_code = gen_code(left)
+        right_code = gen_code(right)
+
+        if node.value == "+":
+            return f"{left_code}{right_code}\nadd"
+        elif node.value == "-":
+            return f"{left_code}{right_code}\nsub"
+        elif node.value == "*":
+            return f"{left_code}{right_code}\nmul"
+        elif node.value == "/":
+            return f"{left_code}{right_code}\nfdiv" # for real division
+        
+    elif node.value in {"div", "mod"}:
+        left = node.children[0]
+        right = node.children[1]
+
+        left_code = gen_code(left)
+        right_code = gen_code(right)
+
+        if node.value == "div":
+            return f"{left_code}{right_code}\ndiv"
+        elif node.value == "mod":
+            return f"{left_code}{right_code}\nmod"
 
 
     elif node.value == "Factor":
@@ -255,7 +328,6 @@ def gen_code(node : ASTNode) -> str:
                             if var_info["type"].lower() == "integer":
                                 lines.append("atoi")
                             lines.append(f"storeg {var_info['index']}")
-                            lines.append("writeln")
                     return "\n" + "\n".join(lines)
             # ELSE ARRAY
         return primary

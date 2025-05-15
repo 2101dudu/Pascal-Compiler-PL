@@ -484,7 +484,7 @@ def p_primary_boolean(p):
     """
     Primary : boolean
     """
-    p[0] = bool(p[1])
+    p[0] = p[1]
 
 def p_primary_id(p):
     """
@@ -496,7 +496,7 @@ def p_primary_exp(p):
     """
     Primary : '(' Exp ')'
     """
-    p[0] = ASTNode("Exp", [p[2]])
+    p[0] = p[2]
 
 def p_termop_plus(p):
     """
@@ -544,7 +544,7 @@ def p_orexp_orexp(p):
     """
     OrExp : OrExp OR AndExp
     """
-    p[0] = ASTNode("or", [p[1], p[3]])
+    p[0] = ASTNode("OR", [p[1], p[3]])
 
 def p_orexp_andexp(p):
     """
@@ -556,7 +556,7 @@ def p_andexp_andexp(p):
     """
     AndExp : AndExp AND RelExp
     """
-    p[0] = ASTNode("and", [p[1], p[3]])
+    p[0] = ASTNode("AND", [p[1], p[3]])
 
 def p_andexp_relexp(p):
     """
@@ -592,7 +592,7 @@ def p_mulexp_mulexp(p):
     """
     MulExp : MulExp FactorOp Unary
     """
-    p[0] = ASTNode("MulExp", [p[1], p[2], p[3]])
+    p[0] = ASTNode(p[2], [p[1], p[3]])
 
 def p_mulexp_unary(p):
     """
@@ -604,7 +604,7 @@ def p_unary_not(p):
     """
     Unary : NOT Unary
     """
-    p[0] = ASTNode("not", p[2])
+    p[0] = ASTNode("NOT", p[2])
 
 def p_unary_primary(p):
     """
