@@ -34,7 +34,7 @@ def gen_code(node : ASTNode) -> str:
             var_info = vars_dic[node]
             return f"\npushg {var_info['index']}"
         else:
-            return f'\npushs "{node}"'
+            return f'\npushs "{node}"\nchrcode'
 
     if isinstance(node, float):
         return f"\npushf {node}"
@@ -190,7 +190,7 @@ def gen_code(node : ASTNode) -> str:
         lines.append(body)
         lines.append(f"\npushg {var_index}")
         lines.append(f"\npushi 1")
-        if cond == "inf":
+        if cond == "infeq":
             lines.append("\nadd")
         else:
             lines.append("\nsub")
@@ -367,6 +367,15 @@ def gen_code(node : ASTNode) -> str:
                             lines.append("storen")                            
 
                     return "\n" + "\n".join(lines)
+                elif primary.lower() == "length":
+                    for arg in args:
+                        if isinstance(arg, str):
+                            arg_code = gen_code(arg)
+                            return f"{arg_code}\nstrlen"
+                
+                else:
+                    print(f"Unhandled function call: {primary}")
+                    return ""
             # handle arrays
             else:
                 #TODO: allow multiple dimensions
@@ -377,9 +386,16 @@ def gen_code(node : ASTNode) -> str:
                     if arr_index in vars_dic:
                         arr_index = vars_dic[arr_index]["index"]
 
-                    return f"\npushgp\npushi {var_info["index"]}\npushg {arr_index}\npushi {var_info["start_index"]}\nsub\nadd\nloadn"
+                    if var_info["type"] == "array":
+                        return f"\npushgp\npushi {var_info["index"]}\npushg {arr_index}\npushi {var_info["start_index"]}\nsub\nadd\nloadn"
+                    elif var_info["type"] == "string":
+                        return f"\npushg {var_info["index"]}\npushg {arr_index}\npushi 1\nsub\ncharat"
+                        
                 elif isinstance(arr_index, int):
-                    return f"\npushgp\npushg {var_info["index"] + (arr_index - var_info["start_index"])}\nloadn"
+                    if var_info["type"] == "array":
+                        return f"\npushgp\npushg {var_info["index"] + (arr_index - var_info["start_index"])}\nloadn"
+                    elif var_info["type"] == "string":
+                        f"\npushg {var_info["index"]}\npushi {arr_index}\npushi 1\nsub\ncharat"
                 
         return primary
 
