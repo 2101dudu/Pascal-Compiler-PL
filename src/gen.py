@@ -190,7 +190,7 @@ def gen_code(node : ASTNode) -> str:
         lines.append(body)
         lines.append(f"\npushg {var_index}")
         lines.append(f"\npushi 1")
-        if cond == "inf":
+        if cond == "infeq":
             lines.append("\nadd")
         else:
             lines.append("\nsub")
