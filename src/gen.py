@@ -45,7 +45,7 @@ def gen_code(node : ASTNode) -> str:
     #print(node)
 
     if node.value == "program":
-        program_name = gen_code(node.children[0])
+        program_name = node.children[0]
         var_list = gen_code(node.children[1]) if len(node.children) > 1 and node.children[1] else ""
         function_list = gen_code(node.children[2]) if len(node.children) > 2 and node.children[2] else ""
         main_block = gen_code(node.children[3]) if len(node.children) > 3 and node.children[3] else ""
@@ -79,14 +79,29 @@ def gen_code(node : ASTNode) -> str:
 
                 var_names = [str(child) for child in var_ids_node.children]
                 for var_name in var_names:
-                    vars_dic[var_name] = {
-                        "index": current_index,
-                        "type": var_type
-                    }
-                    current_index += 1  # Increment index for each variable
+                    if isinstance(var_type, ASTNode) and var_type.value == "array":
+                        array_indexes = var_type.children[0]
+                        size = array_indexes.children[1] - array_indexes.children[0] + 1
+
+                        vars_dic[var_name] = {
+                            "index": current_index,
+                            "type": var_type,
+                            "size": size,
+                            "start_index": array_indexes.children[0],
+                            "type_array": str(var_type.children[1])
+                        }
+                        current_index += size
+                    else:   
+                        vars_dic[var_name] = {
+                            "index": current_index,
+                            "type": var_type
+                        }
+                        current_index += 1
 
                 if isinstance(var_type, str):
                     lines.append(f"pushn {len(var_names)}")
+                elif isinstance(var_type, ASTNode) and var_type.value == "array":
+                    lines.append(f"pushn {len(var_names) * vars_dic[var_name]['size']}")
         
         res = "\n".join(lines)
         return f"\n{res}"
@@ -156,28 +171,20 @@ def gen_code(node : ASTNode) -> str:
         for_to = node.children[1]
         
         expr = gen_code(node.children[2])
-        expr_index = None
-        if expr in vars_dic: # check if expr is a variable
-            expr_index = vars_dic[expr]["index"]
-            expr_string = f"\npushg {expr_index}"
-        else: # check if expr is a literal
-            if vars_dic[var_name]["type"] == "integer":
-                expr_string = f"\npushi {expr}"
-            if vars_dic[var_name]["type"] == "string":
-                expr_string = f'\npushs "{expr}"'
 
         body = gen_code(node.children[3])
 
         cond = ""
         if for_to == "to": 
-            cond = "inf"
+            cond = "infeq"
         else:
-            cond = "sup"
+            cond = "supeq"
         
         lines = []
+        lines.append(atrib)
         lines.append(f"\n{label_for}:")
         lines.append(f"\npushg {var_index}")
-        lines.append(f"\npushi {expr_index}")
+        lines.append(f"{expr}")
         lines.append(f"\n{cond}")
         lines.append(f"\njz {label_end}")
         lines.append(body)
@@ -234,7 +241,17 @@ def gen_code(node : ASTNode) -> str:
 
         if var_array:
             # handle arrays
-            return ""
+            var_info = vars_dic[var_name]
+            arr_index = var_array.children[0]
+            if isinstance(arr_index, str):
+                if arr_index in vars_dic:
+                    arr_index = vars_dic[arr_index]["index"]
+
+                return f"\npushgp\npushi {var_info["index"]}\npushg {arr_index}\npushi {var_info["start_index"]}\nsub\nadd{expr}\nstoren"
+            
+            elif isinstance(arr_index, int):
+                return f"\npushgp\npushg {var_info["index"] + (arr_index - var_info["start_index"])}\n{expr}\nstoren"
+
         else: 
             return f"{expr}\nstoreg {var_index}"
 
@@ -277,7 +294,7 @@ def gen_code(node : ASTNode) -> str:
         if isinstance(primary, str) and suffix_node and suffix_node.value == "suffix list":
             args = []
             list_nodes = [child for child in suffix_node.children]
-            if len(list_nodes) == 1 and list_nodes[0].value == "arg list":
+            if len(list_nodes) == 1 and isinstance(list_nodes[0], ASTNode) and list_nodes[0].value == "arg list":
                 args = list_nodes[0].children
                 lines = []
                 ## WRITELN ##
@@ -328,8 +345,42 @@ def gen_code(node : ASTNode) -> str:
                             if var_info["type"].lower() == "integer":
                                 lines.append("atoi")
                             lines.append(f"storeg {var_info['index']}")
+
+                        # arrays
+                        elif isinstance(arg, ASTNode) and arg.value == "Factor":
+                            var_info = vars_dic[arg.children[0]]
+                            
+                            #TODO: allow multiple dimensions
+                            arr_index = arg.children[1].children[0]
+                            if isinstance(arr_index, str):
+                                if arr_index in vars_dic:
+                                    arr_index = vars_dic[arr_index]["index"]
+
+                                lines.append(f"pushgp\npushi {var_info["index"]}\npushg {arr_index}\npushi {var_info["start_index"]}\nsub\nadd")
+                            elif isinstance(arr_index, int):
+                                lines.append(f"pushgp\npushg {var_info["index"] + (arr_index - var_info["start_index"])}")
+
+                            lines.append("read")
+                            if var_info["type_array"].lower() == "integer":
+                                lines.append("atoi")
+                            
+                            lines.append("storen")                            
+
                     return "\n" + "\n".join(lines)
-            # ELSE ARRAY
+            # handle arrays
+            else:
+                #TODO: allow multiple dimensions
+
+                var_info = vars_dic[primary]
+                arr_index = list_nodes.pop()
+                if isinstance(arr_index, str):
+                    if arr_index in vars_dic:
+                        arr_index = vars_dic[arr_index]["index"]
+
+                    return f"\npushgp\npushi {var_info["index"]}\npushg {arr_index}\npushi {var_info["start_index"]}\nsub\nadd\nloadn"
+                elif isinstance(arr_index, int):
+                    return f"\npushgp\npushg {var_info["index"] + (arr_index - var_info["start_index"])}\nloadn"
+                
         return primary
 
     
