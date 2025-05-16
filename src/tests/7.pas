@@ -1,4 +1,5 @@
 program BinarioParaInteiro;
+
 function BinToInt(bin: string): integer;
 var
   i, valor, potencia: integer;
@@ -13,6 +14,8 @@ begin
   end;
   BinToInt := valor;
 end;
+
+
 var
   bin: string;
   valor: integer;
