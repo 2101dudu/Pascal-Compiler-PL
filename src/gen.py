@@ -247,10 +247,10 @@ def gen_code(node : ASTNode) -> str:
                 if arr_index in vars_dic:
                     arr_index = vars_dic[arr_index]["index"]
 
-                return f"\npushgp\npushi {var_info["index"]}\npushg {arr_index}\npushi {var_info["start_index"]}\nsub\nadd{expr}\nstoren"
+                return f"\npushgp\npushi {var_info['index']}\npushg {arr_index}\npushi {var_info['start_index']}\nsub\nadd{expr}\nstoren"
             
             elif isinstance(arr_index, int):
-                return f"\npushgp\npushg {var_info["index"] + (arr_index - var_info["start_index"])}\n{expr}\nstoren"
+                return f"\npushgp\npushg {var_info['index'] + (arr_index - var_info['start_index'])}\n{expr}\nstoren"
 
         else: 
             return f"{expr}\nstoreg {var_index}"
@@ -356,9 +356,9 @@ def gen_code(node : ASTNode) -> str:
                                 if arr_index in vars_dic:
                                     arr_index = vars_dic[arr_index]["index"]
 
-                                lines.append(f"pushgp\npushi {var_info["index"]}\npushg {arr_index}\npushi {var_info["start_index"]}\nsub\nadd")
+                                lines.append(f"pushgp\npushi {var_info['index']}\npushg {arr_index}\npushi {var_info['start_index']}\nsub\nadd")
                             elif isinstance(arr_index, int):
-                                lines.append(f"pushgp\npushg {var_info["index"] + (arr_index - var_info["start_index"])}")
+                                lines.append(f"pushgp\npushg {var_info['index'] + (arr_index - var_info['start_index'])}")
 
                             lines.append("read")
                             if var_info["type_array"].lower() == "integer":
@@ -387,15 +387,15 @@ def gen_code(node : ASTNode) -> str:
                         arr_index = vars_dic[arr_index]["index"]
 
                     if var_info["type"] == "array":
-                        return f"\npushgp\npushi {var_info["index"]}\npushg {arr_index}\npushi {var_info["start_index"]}\nsub\nadd\nloadn"
+                        return f"\npushgp\npushi {var_info['index']}\npushg {arr_index}\npushi {var_info['start_index']}\nsub\nadd\nloadn"
                     elif var_info["type"] == "string":
-                        return f"\npushg {var_info["index"]}\npushg {arr_index}\npushi 1\nsub\ncharat"
+                        return f"\npushg {var_info['index']}\npushg {arr_index}\npushi 1\nsub\ncharat"
                         
                 elif isinstance(arr_index, int):
                     if var_info["type"] == "array":
-                        return f"\npushgp\npushg {var_info["index"] + (arr_index - var_info["start_index"])}\nloadn"
+                        return f"\npushgp\npushg {var_info['index'] + (arr_index - var_info['start_index'])}\nloadn"
                     elif var_info["type"] == "string":
-                        f"\npushg {var_info["index"]}\npushi {arr_index}\npushi 1\nsub\ncharat"
+                        f"\npushg {var_info['index']}\npushi {arr_index}\npushi 1\nsub\ncharat"
                 
         return primary
 
