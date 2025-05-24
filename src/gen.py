@@ -232,48 +232,45 @@ def gen_code(node : ASTNode) -> str:
 
     ########## FOR ##########
     elif node.value == "for":
-        atrib = gen_code(node.children[0])
-        
+        atrib = gen_code(node.children[0]) 
+
         global for_id
-        
         label_for = f"FOR{for_id}"
         label_end = f"ENDFOR{for_id}"
         for_id += 1
 
-        var_name = node.children[0].children[0].children[0] # FOR -> ATRIB -> VAR -> Var name
-        var_index = vars_dic[var_name]["index"]
 
-        for_to = node.children[1]
+        var_name = node.children[0].children[0].children[0]
+
         
-        expr = gen_code(node.children[2])
+        dic = funcs_dic[current_func]["params"] if is_function else vars_dic
+        push_instr = "pushl" if is_function else "pushg"
+        store_instr = "storel" if is_function else "storeg"
 
-        body = gen_code(node.children[3])
+        var_index = dic[var_name]["index"]
 
-        cond = ""
-        if for_to == "to": 
-            cond = "infeq"
-        else:
-            cond = "supeq"
-        
-        lines = []
-        lines.append(atrib)
-        lines.append(f"\n{label_for}:")
-        lines.append(f"\npushg {var_index}")
-        lines.append(f"{expr}")
-        lines.append(f"\n{cond}")
-        lines.append(f"\njz {label_end}")
-        lines.append(body)
-        lines.append(f"\npushg {var_index}")
-        lines.append(f"\npushi 1")
-        if cond == "infeq":
-            lines.append("\nadd")
-        else:
-            lines.append("\nsub")
-        lines.append(f"\nstoreg {var_index}")
-        lines.append(f"\njump {label_for}")
-        lines.append(f"\n{label_end}:")
+        for_to = node.children[1]  
+        expr = gen_code(node.children[2])  
+        body = gen_code(node.children[3])  
 
-        return "".join(lines)
+        cond_instr = "infeq" if for_to == "to" else "supeq"
+        update_instr = "add" if for_to == "to" else "sub"
+
+        return (
+            f"{atrib}"
+            f"\n{label_for}:"
+            f"\n{push_instr} {var_index}"
+            f"{expr}"
+            f"\n{cond_instr}"
+            f"\njz {label_end}"
+            f"{body}"
+            f"\n{push_instr} {var_index}"
+            f"\npushi 1"
+            f"\n{update_instr}"
+            f"\n{store_instr} {var_index}"
+            f"\njump {label_for}"
+            f"\n{label_end}:"
+        )
 
         
 
@@ -521,13 +518,13 @@ def gen_code(node : ASTNode) -> str:
                     if var_info["type"] == "array":
                         return f"\npushgp\npushi {var_info['index']}\npushg {arr_index}\npushi {var_info['start_index']}\nsub\nadd\nloadn"
                     elif var_info["type"] == "string":
-                        return f"\npushgp {var_info['index']}\npushg {arr_index}\npushi 1\nsub\ncharat"
+                        return f"\npushg {var_info['index']}\npushg {arr_index}\npushi 1\nsub\ncharat"
                         
                 elif isinstance(arr_index, int):
                     if var_info["type"] == "array":
                         return f"\npushgp\npushi {var_info['index'] + (arr_index - var_info['start_index'])}\nloadn"
                     elif var_info["type"] == "string":
-                        f"\npushgp {var_info['index']}\npushi {arr_index}\npushi 1\nsub\ncharat"
+                        f"\npushg {var_info['index']}\npushi {arr_index}\npushi 1\nsub\ncharat"
                 
         return primary
 
