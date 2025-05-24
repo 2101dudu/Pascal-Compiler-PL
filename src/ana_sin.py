@@ -64,7 +64,7 @@ def p_funcdefinition_id(p):
     """
     FuncDefinition : id Parameters
     """
-    p[0] = ASTNode("function", [p[1], p[2]])
+    p[0] = ASTNode("functionid", [p[1], p[2]])
 
 
 def p_parameters_(p):

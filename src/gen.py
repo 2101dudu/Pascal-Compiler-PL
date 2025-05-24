@@ -2,6 +2,9 @@ import sys
 from AST.tree import ASTNode
 
 vars_dic = {}
+current_func = "main"
+is_function = False
+funcs_dic = {}
 while_id = 0
 for_id = 0
 if_id = 0
@@ -47,9 +50,11 @@ def gen_code(node : ASTNode) -> str:
     if node.value == "program":
         program_name = node.children[0]
         var_list = gen_code(node.children[1]) if len(node.children) > 1 and node.children[1] else ""
+        
         function_list = gen_code(node.children[2]) if len(node.children) > 2 and node.children[2] else ""
         main_block = gen_code(node.children[3]) if len(node.children) > 3 and node.children[3] else ""
-        return f"// Program: {program_name}{var_list}{function_list}\nstart{main_block}\nstop"
+        
+        return f"// Program: {program_name}{var_list}{main_block}{function_list}"
 
     ########## MAIN ##########
     elif node.value == "main":
@@ -59,31 +64,99 @@ def gen_code(node : ASTNode) -> str:
             varsec = gen_code(node.children[0])
         if len(node.children) > 1 and node.children[1]:
             body = gen_code(node.children[1])
-        return f"{varsec}{body}"
+        return f"{varsec}\nstart{body}\nstop"
         
     elif node.value == "body":
         return "".join(gen_code(stmt) for stmt in node.children if stmt is not None)
     
     ########## FUNCTIONS ##########
     elif node.value == "functionlist":
-        return "\n".join(gen_code(func) for func in node.children if func is not None)
+        global current_func
+        global is_function
+        function_lines = []
+        for func in node.children:
+            if func.value == "function":
+
+                func_definition = func.children[0]
+                return_type = func.children[1] if len(func.children) > 2 else None
+
+                if func_definition.value == "functionid": # param list
+                    func_name = func_definition.children[0]
+                    param_list_node = func_definition.children[1]
+
+                    param_dict = {}
+
+                    if param_list_node and param_list_node.value == "params":
+                        index = 0
+                        for param_node in param_list_node.children:
+                            if param_node.value == "pair":
+                                param_name = param_node.children[0]
+                                param_type = param_node.children[1]
+                                param_dict[param_name] = {
+                                    "type": str(param_type),
+                                    "index": index
+                                }
+                                index += 1
+
+                        function_lines.append(f"\n{func_name}:")
+                        function_lines.append(f"\npushfp")
+                        for param_name, param_info in param_dict.items(): # param load from new gp
+                            param_index = param_info["index"]
+                            function_lines.append(f"\nload -{index - param_index}")
+
+
+                    funcs_dic[func_name] = {
+                        "return_type": str(return_type),
+                        "params": param_dict
+                    }
+
+                else:
+                    print(f"Unhandled function definition node: {func_definition.value}")
+                    return ""
+                
+                current_func = func_name
+                is_function = True
+
+                # function other vars and body
+
+                func_varsec = gen_code(func.children[2]) if len(func.children) > 3 else None
+                func_body = gen_code(func.children[3]) if len(func.children) > 4 else None
+                if func_varsec:
+                    function_lines.append(func_varsec)
+                if func_body:
+                    function_lines.append(func_body)
+                function_lines.append(f"\nreturn")
+
+                
+            else:
+                print(f"Unhandled function list node: {func.value}")
+                return ""
+        return "".join(function_lines)
+
 
     ########## VAR ##########
     elif node.value == "varsection":
         lines = []
-        current_index = len(vars_dic)
+        if is_function:
+            dic = funcs_dic[current_func]["params"]
+        else:
+            dic = vars_dic
+
+        current_index = len(dic)
         for var_decl in node.children:
             if var_decl.value == "var":
                 var_ids_node = var_decl.children[0]
                 var_type = var_decl.children[1]
 
                 var_names = [str(child) for child in var_ids_node.children]
+                total_size = 0
+
                 for var_name in var_names:
                     if isinstance(var_type, ASTNode) and var_type.value == "array":
                         array_indexes = var_type.children[0]
                         size = array_indexes.children[1] - array_indexes.children[0] + 1
 
-                        vars_dic[var_name] = {
+                        dic[var_name] = {
                             "index": current_index,
                             "type": var_type,
                             "size": size,
@@ -91,18 +164,17 @@ def gen_code(node : ASTNode) -> str:
                             "type_array": str(var_type.children[1])
                         }
                         current_index += size
+                        total_size += size
                     else:   
-                        vars_dic[var_name] = {
+                        dic[var_name] = {
                             "index": current_index,
                             "type": var_type
                         }
                         current_index += 1
+                        total_size += 1
 
-                if isinstance(var_type, str):
-                    lines.append(f"pushn {len(var_names)}")
-                elif isinstance(var_type, ASTNode) and var_type.value == "array":
-                    lines.append(f"pushn {len(var_names) * vars_dic[var_name]['size']}")
-        
+                lines.append(f"pushn {total_size}")
+
         res = "\n".join(lines)
         return f"\n{res}"
     
