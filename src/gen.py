@@ -78,7 +78,7 @@ def gen_code(node : ASTNode) -> str:
             if func.value == "function":
 
                 func_definition = func.children[0]
-                return_type = func.children[1] if len(func.children) > 2 else None
+                return_type = func.children[1] if len(func.children) > 1 else None
 
                 if func_definition.value == "functionid": # param list
                     func_name = func_definition.children[0]
@@ -119,14 +119,17 @@ def gen_code(node : ASTNode) -> str:
 
                 # function other vars and body
 
-                func_varsec = gen_code(func.children[2]) if len(func.children) > 3 else None
-                func_body = gen_code(func.children[3]) if len(func.children) > 4 else None
+                func_varsec = gen_code(func.children[2]) if len(func.children) > 2 else None
+                func_body = gen_code(func.children[3]) if len(func.children) > 3 else None
+
                 if func_varsec:
                     function_lines.append(func_varsec)
                 if func_body:
                     function_lines.append(func_body)
                 function_lines.append(f"\nreturn")
 
+                is_function = False
+                current_func = "main"
                 
             else:
                 print(f"Unhandled function list node: {func.value}")
@@ -158,7 +161,7 @@ def gen_code(node : ASTNode) -> str:
 
                         dic[var_name] = {
                             "index": current_index,
-                            "type": var_type,
+                            "type": var_type.value,
                             "size": size,
                             "start_index": array_indexes.children[0],
                             "type_array": str(var_type.children[1])
@@ -302,22 +305,35 @@ def gen_code(node : ASTNode) -> str:
     
     ########## OTHER ##########
     elif node.value == "Atrib":
+        dic = {}
+        store_str = ""
+        if is_function:
+            dic = funcs_dic[current_func]["params"]
+            store_str = "storel"
+        else:
+            dic = vars_dic
+            store_str = "storeg"
+
         var_node = node.children[0]
         expr = gen_code(node.children[1])
 
         var_name = var_node.children[0]
-        var_index = vars_dic[var_name]["index"]
+        var_index = dic[var_name]["index"]
 
         var_array = var_node.children[1] if len(var_node.children) > 1 else None
         
 
         if var_array:
+            if is_function: 
+                print("Error: Arrays are not supported in function parameters.")
+                return ""
+            
             # handle arrays
-            var_info = vars_dic[var_name]
+            var_info = dic[var_name]
             arr_index = var_array.children[0]
             if isinstance(arr_index, str):
-                if arr_index in vars_dic:
-                    arr_index = vars_dic[arr_index]["index"]
+                if arr_index in dic:
+                    arr_index = dic[arr_index]["index"]
 
                 return f"\npushgp\npushi {var_info['index']}\npushg {arr_index}\npushi {var_info['start_index']}\nsub\nadd{expr}\nstoren"
             
@@ -325,7 +341,7 @@ def gen_code(node : ASTNode) -> str:
                 return f"\npushgp\npushg {var_info['index'] + (arr_index - var_info['start_index'])}\n{expr}\nstoren"
 
         else: 
-            return f"{expr}\nstoreg {var_index}"
+            return f"{expr}\n{store_str} {var_index}"
 
     elif node.value in {"+", "-", "*", "/"}:
         left = node.children[0]
@@ -369,16 +385,51 @@ def gen_code(node : ASTNode) -> str:
             if len(list_nodes) == 1 and isinstance(list_nodes[0], ASTNode) and list_nodes[0].value == "arg list":
                 args = list_nodes[0].children
                 lines = []
+
+                dic = {}
+                push_str = ""
+                store_str = ""
+                if is_function:
+                    dic = funcs_dic[current_func]["params"]
+                    push_str = "pushl"
+                    store_str = "storel"
+                else:
+                    dic = vars_dic
+                    push_str = "pushg"
+                    store_str= "storeg"
+
+                ## FUNC ##
+                if current_func == "main" and primary in funcs_dic:
+                    func_info = funcs_dic[primary]
+                    for arg in args:
+                    
+                        # variável declarada
+                        if isinstance(arg, str) and arg in vars_dic:
+                            var_info = vars_dic[arg]
+                            lines.append(f"pushg {var_info['index']}")
+                        
+                        # string literal
+                        elif isinstance(arg, str):
+                            lines.append(f'pushs "{arg}"')
+                        
+                        # Se for um número inteiro
+                        elif isinstance(arg, int):
+                            lines.append(f"pushi {arg}")
+                
+                    lines.append(f"pusha {primary}\ncall")
+                    return "\n" + "\n".join(lines)
+
                 ## WRITELN ##
-                if primary.lower() == "writeln":
+                elif primary.lower() == "writeln":
                     for arg in args:
                         if isinstance(arg, ASTNode):
                             arg_code = gen_code(arg)
                             lines.append(arg_code)
                             lines.append("writes")
-                        elif arg in vars_dic:  # write de variável
-                            var_info = vars_dic[arg]
-                            lines.append(f"pushg {var_info['index']}")
+                        elif arg in dic:  # write de variável
+                            
+                            var_info = dic[arg]
+                            lines.append(f"{push_str} {var_info['index']}")
                             if var_info["type"].lower() == "integer":
                                 lines.append("writei")
                             else:
@@ -396,9 +447,9 @@ def gen_code(node : ASTNode) -> str:
                             arg_code = gen_code(arg)
                             lines.append(arg_code)
                             lines.append("writes")
-                        elif arg in vars_dic:  # write de variável
-                            var_info = vars_dic[arg]
-                            lines.append(f"pushg {var_info['index']}")
+                        elif arg in dic:  # write de variável
+                            var_info = dic[arg]
+                            lines.append(f"{push_str} {var_info['index']}")
                             if var_info["type"].lower() == "integer":
                                 lines.append("writei")
                             else:
@@ -407,19 +458,23 @@ def gen_code(node : ASTNode) -> str:
                             lines.append(f'pushs "{arg}"')
                             lines.append("writes")
                     return "\n" + "\n".join(lines)
+                
                 ## READLN ##
                 elif primary.lower() == "readln":
 
                     for arg in args:
-                        if arg in vars_dic:
-                            var_info = vars_dic[arg]
+                        if arg in dic:
+                            var_info = dic[arg]
                             lines.append("read")
                             if var_info["type"].lower() == "integer":
                                 lines.append("atoi")
-                            lines.append(f"storeg {var_info['index']}")
+                            lines.append(f"{store_str} {var_info['index']}")
 
                         # arrays
                         elif isinstance(arg, ASTNode) and arg.value == "Factor":
+                            if is_function:
+                                print("Error: Arrays are not supported in function parameters.")
+                                return ""
                             var_info = vars_dic[arg.children[0]]
                             
                             #TODO: allow multiple dimensions
@@ -430,7 +485,7 @@ def gen_code(node : ASTNode) -> str:
 
                                 lines.append(f"pushgp\npushi {var_info['index']}\npushg {arr_index}\npushi {var_info['start_index']}\nsub\nadd")
                             elif isinstance(arr_index, int):
-                                lines.append(f"pushgp\npushg {var_info['index'] + (arr_index - var_info['start_index'])}")
+                                lines.append(f"pushgp\npushi {var_info['index'] + (arr_index - var_info['start_index'])}")
 
                             lines.append("read")
                             if var_info["type_array"].lower() == "integer":
@@ -450,9 +505,14 @@ def gen_code(node : ASTNode) -> str:
                     return ""
             # handle arrays
             else:
+                if is_function:
+                    print("Error: Arrays are not supported in function parameters.")
+                    return ""
                 #TODO: allow multiple dimensions
+                var_name = primary
 
-                var_info = vars_dic[primary]
+                var_info = vars_dic[var_name]
+
                 arr_index = list_nodes.pop()
                 if isinstance(arr_index, str):
                     if arr_index in vars_dic:
@@ -461,13 +521,13 @@ def gen_code(node : ASTNode) -> str:
                     if var_info["type"] == "array":
                         return f"\npushgp\npushi {var_info['index']}\npushg {arr_index}\npushi {var_info['start_index']}\nsub\nadd\nloadn"
                     elif var_info["type"] == "string":
-                        return f"\npushg {var_info['index']}\npushg {arr_index}\npushi 1\nsub\ncharat"
+                        return f"\npushgp {var_info['index']}\npushg {arr_index}\npushi 1\nsub\ncharat"
                         
                 elif isinstance(arr_index, int):
                     if var_info["type"] == "array":
-                        return f"\npushgp\npushg {var_info['index'] + (arr_index - var_info['start_index'])}\nloadn"
+                        return f"\npushgp\npushi {var_info['index'] + (arr_index - var_info['start_index'])}\nloadn"
                     elif var_info["type"] == "string":
-                        f"\npushg {var_info['index']}\npushi {arr_index}\npushi 1\nsub\ncharat"
+                        f"\npushgp {var_info['index']}\npushi {arr_index}\npushi 1\nsub\ncharat"
                 
         return primary
 
