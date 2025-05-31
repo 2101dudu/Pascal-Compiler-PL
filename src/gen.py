@@ -22,6 +22,7 @@ op_map = {
 
 def gen_code(node : ASTNode) -> str:
     global current_func
+    global is_function
 
     if node is None:
         return ""
@@ -33,10 +34,10 @@ def gen_code(node : ASTNode) -> str:
         if node in ["true", "false"]:
             return "\npushi 1" if node == "true" else "\npushi 0"
 
-        if node in vars_dic:
+        if (not is_function) and node in vars_dic:
             var_info = vars_dic[node]
             return f"\npushg {var_info['index']}"
-        elif node in funcs_dic[current_func]["params"]:
+        elif (is_function) and node in funcs_dic[current_func]["params"]:
             var_info = funcs_dic[current_func]["params"][node]
             return f"\npushl {var_info['index']}"
         else:
@@ -74,7 +75,7 @@ def gen_code(node : ASTNode) -> str:
     
     ########## FUNCTIONS ##########
     elif node.value == "functionlist":
-        global is_function
+
         function_lines = []
         for func in node.children:
             if func.value == "function":
