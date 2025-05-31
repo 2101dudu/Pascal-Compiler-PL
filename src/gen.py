@@ -49,8 +49,6 @@ def gen_code(node : ASTNode) -> str:
     if not hasattr(node, 'value') or not hasattr(node, 'children'):
                 raise ValueError(f"Expected an ASTNode, got {type(node)} instead", node)
 
-    #print(node)
-
     if node.value == "program":
         program_name = node.children[0]
         var_list = gen_code(node.children[1]) if len(node.children) > 1 and node.children[1] else ""

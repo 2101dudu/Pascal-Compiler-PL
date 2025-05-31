@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Check if the number of tests was passed
-if [ -z "$1" ]; then
-  echo "Usage: $0 <number_of_tests>"
-  exit 1
-fi
+mkdir -p out
 
-# Loop through all tests from 1 to N
-for ((i=1; i<=$1; i++))
-do
-  echo "[$i]"
-  cat "tests/$i.pas" | python3 ana_sin.py
+# Loop through all .pas files in the tests directory
+for testfile in tests/*.pas; do
+  # Extract the base name without directory and extension
+  basename=$(basename "$testfile" .pas)
+  
+  echo "Running test [$basename]"
+  
+  # Run the test and redirect output
+  cat "$testfile" | python3 main.py > "out/${basename}.vm"
 done
