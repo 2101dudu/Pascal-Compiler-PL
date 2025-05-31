@@ -21,7 +21,7 @@ op_map = {
 }
 
 def gen_code(node : ASTNode) -> str:
-    
+    global current_func
 
     if node is None:
         return ""
@@ -36,6 +36,9 @@ def gen_code(node : ASTNode) -> str:
         if node in vars_dic:
             var_info = vars_dic[node]
             return f"\npushg {var_info['index']}"
+        elif node in funcs_dic[current_func]["params"]:
+            var_info = funcs_dic[current_func]["params"][node]
+            return f"\npushl {var_info['index']}"
         else:
             return f'\npushs "{node}"\nchrcode'
 
@@ -71,7 +74,6 @@ def gen_code(node : ASTNode) -> str:
     
     ########## FUNCTIONS ##########
     elif node.value == "functionlist":
-        global current_func
         global is_function
         function_lines = []
         for func in node.children:
@@ -126,7 +128,6 @@ def gen_code(node : ASTNode) -> str:
                     function_lines.append(func_varsec)
                 if func_body:
                     function_lines.append(func_body)
-                function_lines.append(f"\nreturn")
 
                 is_function = False
                 current_func = "main"
@@ -302,19 +303,22 @@ def gen_code(node : ASTNode) -> str:
     
     ########## OTHER ##########
     elif node.value == "Atrib":
+        var_node = node.children[0]
+        expr = gen_code(node.children[1])
+        
+        var_name = var_node.children[0]
         dic = {}
         store_str = ""
         if is_function:
+            if var_name == current_func:
+                return f"{expr}\nstorel 0\npop {len(funcs_dic[current_func]["params"]) - 1}\nreturn"
+            
             dic = funcs_dic[current_func]["params"]
             store_str = "storel"
         else:
             dic = vars_dic
             store_str = "storeg"
 
-        var_node = node.children[0]
-        expr = gen_code(node.children[1])
-
-        var_name = var_node.children[0]
         var_index = dic[var_name]["index"]
 
         var_array = var_node.children[1] if len(var_node.children) > 1 else None
@@ -322,7 +326,7 @@ def gen_code(node : ASTNode) -> str:
 
         if var_array:
             if is_function: 
-                print("Error: Arrays are not supported in function parameters.")
+                print("Error 1: Arrays are not supported in function parameters.")
                 return ""
             
             # handle arrays
@@ -470,7 +474,7 @@ def gen_code(node : ASTNode) -> str:
                         # arrays
                         elif isinstance(arg, ASTNode) and arg.value == "Factor":
                             if is_function:
-                                print("Error: Arrays are not supported in function parameters.")
+                                print("Error 2: Arrays are not supported in function parameters.")
                                 return ""
                             var_info = vars_dic[arg.children[0]]
                             
@@ -502,29 +506,31 @@ def gen_code(node : ASTNode) -> str:
                     return ""
             # handle arrays
             else:
+                dic = {}
                 if is_function:
-                    print("Error: Arrays are not supported in function parameters.")
-                    return ""
-                #TODO: allow multiple dimensions
+                    dic = funcs_dic[current_func]["params"]
+                else:
+                    dic = vars_dic
+
                 var_name = primary
 
-                var_info = vars_dic[var_name]
+                var_info = dic[var_name]
 
                 arr_index = list_nodes.pop()
                 if isinstance(arr_index, str):
-                    if arr_index in vars_dic:
-                        arr_index = vars_dic[arr_index]["index"]
+                    if arr_index in dic:
+                        arr_index = dic[arr_index]["index"]
 
                     if var_info["type"] == "array":
-                        return f"\npushgp\npushi {var_info['index']}\npushg {arr_index}\npushi {var_info['start_index']}\nsub\nadd\nloadn"
+                        return f"\npush{"fp" if is_function else "gp"}\npushi {var_info['index']}\npush{"l" if is_function else "g"} {arr_index}\npushi {var_info['start_index']}\nsub\nadd\nloadn"
                     elif var_info["type"] == "string":
-                        return f"\npushg {var_info['index']}\npushg {arr_index}\npushi 1\nsub\ncharat"
+                        return f"\npush{"l" if is_function else "g"} {var_info['index']}\npush{"l" if is_function else "g"} {arr_index}\npushi 1\nsub\ncharat"
                         
                 elif isinstance(arr_index, int):
                     if var_info["type"] == "array":
-                        return f"\npushgp\npushi {var_info['index'] + (arr_index - var_info['start_index'])}\nloadn"
+                        return f"\npush{"fp" if is_function else "gp"}\npushi {var_info['index'] + (arr_index - var_info['start_index'])}\nloadn"
                     elif var_info["type"] == "string":
-                        f"\npushg {var_info['index']}\npushi {arr_index}\npushi 1\nsub\ncharat"
+                        f"\npush{"l" if is_function else "g"} {var_info['index']}\npushi {arr_index}\npushi 1\nsub\ncharat"
                 
         return primary
 
