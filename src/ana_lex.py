@@ -10,107 +10,107 @@ tokens = (
 
 
 def t_PROGRAM(t):
-    r'program'
+    r'[pP][rR][oO][gG][rR][aA][mM]'
     return t
 
 
 def t_FUNCTION(t):
-    r'function'
+    r'[fF][uU][nN][cC][tT][iI][oO][nN]'
     return t
 
 
 def t_PROCEDURE(t):
-    r'procedure'
+    r'[pP][rR][oO][cC][eE][dD][uU][rR][eE]'
     return t
 
 
 def t_VAR(t):
-    r'var'
+    r'[vV][aA][rR]'
     return t
 
 
 def t_BEGIN(t):
-    r'begin'
+    r'[bB][eE][gG][iI][nN]'
     return t
 
 
 def t_END(t):
-    r'end'
+    r'[eE][nN][dD]'
     return t
 
 
 def t_IF(t):
-    r'if'
+    r'[iI][fF]'
     return t
 
 
 def t_THEN(t):
-    r'then'
+    r'[tT][hH][eE][nN]'
     return t
 
 
 def t_ELSE(t):
-    r'else'
+    r'[eE][lL][sS][eE]'
     return t
 
 
 def t_FOR(t):
-    r'for'
+    r'[fF][oO][rR]'
     return t
 
 
 def t_TO(t):
-    r'to'
+    r'[tT][oO]'
     return t
 
 
 def t_DOWNTO(t):
-    r'downto'
+    r'[dD][oO][wW][nN][tT][oO]'
     return t
 
 
 def t_DO(t):
-    r'do'
+    r'[dD][oO]'
     return t
 
 
 def t_WHILE(t):
-    r'while'
+    r'[wW][hH][iI][lL][eE]'
     return t
 
 
 def t_DIV(t):
-    r'div'
+    r'[dD][iI][vV]'
     return t
 
 
 def t_MOD(t):
-    r'mod'
+    r'[mM][oO][dD]'
     return t
 
 
 def t_AND(t):
-    r'and'
+    r'[aA][nN][dD]'
     return t
 
 
 def t_OR(t):
-    r'or'
+    r'[oO][rR]'
     return t
 
 
 def t_NOT(t):
-    r'not'
+    r'[nN][oO][tT]'
     return t
 
 
 def t_ARRAY(t):
-    r'array'
+    r'[aA][rR][rR][aA][yY]'
     return t
 
 
 def t_OF(t):
-    r'of'
+    r'[oO][fF]'
     return t
 
 
