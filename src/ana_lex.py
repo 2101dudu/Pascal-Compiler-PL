@@ -1,7 +1,7 @@
 import ply.lex as lex
 
 literals = ['(', ')', ';', '.', ',', ':',
-            '{', '}', '>', '<', '=', '*', '+', '-', '[', ']']
+            '{', '}', '>', '<', '=', '*', '+', '-', '/', '[', ']']
 
 tokens = (
     'PROGRAM', 'VAR', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'FOR', 'TO', 'DO', 'WHILE', 'DIV', 'MOD', 'AND', 'OR', 'NOT', 'ARRAY', 'OF', 'DOWNTO', 'FUNCTION', 'PROCEDURE',
@@ -70,7 +70,7 @@ def t_DOWNTO(t):
 
 
 def t_DO(t):
-    r'[dD][oO]'
+    r'[dD][oO][^u]'
     return t
 
 
