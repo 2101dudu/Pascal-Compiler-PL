@@ -311,7 +311,7 @@ def gen_code(node : ASTNode) -> str:
         store_str = ""
         if is_function:
             if var_name == current_func:
-                return f"{expr}\nstorel 0\npop {len(funcs_dic[current_func]["params"]) - 1}\nreturn"
+                return f"{expr}\nstorel 0\npop {len(funcs_dic[current_func]['params']) - 1}\nreturn"
             
             dic = funcs_dic[current_func]["params"]
             store_str = "storel"
@@ -522,15 +522,15 @@ def gen_code(node : ASTNode) -> str:
                         arr_index = dic[arr_index]["index"]
 
                     if var_info["type"] == "array":
-                        return f"\npush{"fp" if is_function else "gp"}\npushi {var_info['index']}\npush{"l" if is_function else "g"} {arr_index}\npushi {var_info['start_index']}\nsub\nadd\nloadn"
+                        return f"\npush{'fp' if is_function else 'gp'}\npushi {var_info['index']}\npush{'l' if is_function else 'g'} {arr_index}\npushi {var_info['start_index']}\nsub\nadd\nloadn"
                     elif var_info["type"] == "string":
-                        return f"\npush{"l" if is_function else "g"} {var_info['index']}\npush{"l" if is_function else "g"} {arr_index}\npushi 1\nsub\ncharat"
+                        return f"\npush{'l' if is_function else 'g'} {var_info['index']}\npush{'l' if is_function else 'g'} {arr_index}\npushi 1\nsub\ncharat"
                         
                 elif isinstance(arr_index, int):
                     if var_info["type"] == "array":
-                        return f"\npush{"fp" if is_function else "gp"}\npushi {var_info['index'] + (arr_index - var_info['start_index'])}\nloadn"
+                        return f"\npush{'fp' if is_function else 'gp'}\npushi {var_info['index'] + (arr_index - var_info['start_index'])}\nloadn"
                     elif var_info["type"] == "string":
-                        f"\npush{"l" if is_function else "g"} {var_info['index']}\npushi {arr_index}\npushi 1\nsub\ncharat"
+                        f"\npush{'l' if is_function else 'g'} {var_info['index']}\npushi {arr_index}\npushi 1\nsub\ncharat"
                 
         return primary
 
