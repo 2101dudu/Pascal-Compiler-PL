@@ -32,7 +32,7 @@ Este relatório visa documentar e detalhar todo o processo de conceção do trab
 
 
 ## 1. Analisador Léxico
-O primeiro passo do processo de compilação é a análise léxica, que consiste em transformar o código-fonte numa sequência de _tokens_, mediante um _lexer_. Para esta tarefa, utilizámos o módulo `lex` da biblioteca [ply](https://www.dabeaz.com/ply/ply.html), uma ferramenta amplamente utilizada nas aulas práticas, que nos facilitou a construção do analisador léxico.
+O primeiro passo do processo de compilação é a análise léxica, que consiste em transformar o código-fonte numa sequência de _tokens_, mediante um _lexer_. Para esta tarefa, utilizamos o módulo `lex` da biblioteca [ply](https://www.dabeaz.com/ply/ply.html), uma ferramenta amplamente utilizada nas aulas práticas, que nos facilitou a construção do analisador léxico.
 
 Dada a natureza relativamente estruturada da linguagem _Pascal_, a implementação do _lexer_ foi bastante direta. Ainda assim procuramos seguir uma abordagem modular e robusta, antecipando possíveis extensões futuras.
 
@@ -113,16 +113,14 @@ Para assegurar que um programa _Pascal_ se encontra semanticamente correto, o gr
 
 - **Uso de variáveis não declaradas**: verifica se todas as variáveis usadas em atribuições ou expressões foram declaradas.
 
-- **Indexação de _arrays_**: obriga variáveis declaradas como _array_ serem usadas com índice, e vice-versa, e mantém integridade no acesso aos _arrays_ através dos índices.
+- **Indexação de _arrays_**: obriga variáveis declaradas como _array_ a serem usadas com índice, e vice-versa, e mantém integridade no acesso aos _arrays_ através dos índices.
 
 - **Definição de funções/_procedures_**: todas as funções/_procedures_ estão unicamente definidos e averigua o tipo dos argumentos de entrada e saída numa _function call_.
 
-O encadeamento em _pipeline_ do analisador léxico, sintático e semântico promovem a abstração da validação estrutural e lógica do código de entrada, e facilita a utilização da estrutura de dados de saída. O recetor dessa estrutura é, por isso, assegurado que o código de _Pascal_ em questão é válido.
+O encadeamento em _pipeline_ do analisador léxico, sintático e semântico promovem a abstração da validação estrutural e lógica do código de entrada, e facilita a utilização da estrutura de dados de saída. Dessa forma, o componente que consome essa estrutura pode assumir com segurança que o código Pascal analisado é válido, tanto em termos sintáticos quanto semânticos.
 
 # 4. Tradutor
 Toda a lógica do tradutor está "compilada" no ficheiro `src/gen.py` que, a partir do output gerado pelo _parser_, é capaz de gerar todo o código máquina que será futuramente interpretado pela máquina virtual.
-
-Após a construção da árvore de sintaxe abstrata (AST) durante a análise sintática, começamos a análise semântica e a geração de código da linguagem. 
 
 A função de tradução percorre/visita recursivamente todos os nodos da árvore, analisando a sua estrutura e gerando as respetivas instruções de código máquina consoante o tipo de cada nodo, como:
 
@@ -193,9 +191,6 @@ storen // precisa de um valor (v), um índice (i) e um endereço (addr)
 ```
 
 Ao longo de toda a geração do código, temos em conta o contexto atual - seja o corpo principal (`main`) ou uma função. Dependendo desse contexto, são utilizadas diferentes instruções para o acesso e manipulação de variáveis. As variáveis globais são tratadas com instruções como `storeg` e `pushg`, que recorrem ao _Global Pointer_ (GP), enquanto as variáveis locais são manipuladas com instruções como `storel` e `pushl`, que utilizam o _Frame Pointer_ (FP). Esta distinção permite garantir o correto isolamento entre os contextos e assegura a consistência do acesso a dados.
-
-Além disso, o compilador suporta `arrays` com acesso por índice dinâmico (valor determinado em tempo de execução) ou estático (valor fixo). Para aceder ou escrever numa determinada posição de um _array_, calculamos o endereço da célula desejada com base no índice e no início do _array_. Depois, com a ajuda das instruções `pushgp` ou `pushfp` (consoante se trata de uma variável global ou local), obtemos a base do _array_ e, após o cálculo do deslocamento, usamos `loadn` para ler o valor ou `storen` para o escrever na posição pretendida.
-
 
 # 5. Visualizador Árvore Sintática
 Durante o desenvolvimento da árvore de sintaxe abstrata, o grupo decidiu complementar o projeto com um _website_ local que graficamente representasse a mesma. A localização de erros e incongruências foi vastamente facilitada com o auxílio da visualização das árvores.
