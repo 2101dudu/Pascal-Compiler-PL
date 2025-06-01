@@ -42,13 +42,13 @@ class SemanticAnalyzer:
             # We are at global level
             if name in self.global_vars:
                 self.error(f"Variable '{name}' is already declared in global scope.")
-            self.global_vars[name] = var_type
+            self.global_vars[name] = var_type.lower()
         else:
             # At least one local scope exists
             current = self.scopes[-1]
             if name in current:
                 self.error(f"Variable '{name}' is already declared in this local scope.")
-            current[name] = var_type
+            current[name] = var_type.lower()
 
     def add_function(self, name: str, param_list: list, return_type):
         """Register a function or procedure in the global function table."""
@@ -190,7 +190,7 @@ class SemanticAnalyzer:
                 var_type = ("array", elem_type, lower, upper)
             else:
                 # var_type_node should be a string naming a basic type
-                var_type = var_type_node
+                var_type = var_type_node.lower()
             # Now assign this type to each identifier under ASTNode("varIds")
             assert isinstance(ids_node, ASTNode) and ids_node.value == "varIds"
             for id_str in ids_node.children:
