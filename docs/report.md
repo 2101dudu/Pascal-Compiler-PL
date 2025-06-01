@@ -38,7 +38,6 @@ Dada a natureza relativamente estruturada da linguagem _Pascal_, a implementaç�
 
 O _lexer_ desenvolvido reconhece um conjunto alargado de literais, palavras reservadas e terminais variáveis:
 
-
 ```python
 literals = ['(', ')', ';', '.', ',', ':', '{', '}', '>', '<', '=', '*', '+', '-', '/', '[', ']']
 tokens = (
