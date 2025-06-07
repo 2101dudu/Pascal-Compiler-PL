@@ -1,4 +1,5 @@
-# Pascal Compiler (Processamento de Linguagens 2025)
+<h1 align="center">Pascal Compiler<img align="center" src="https://github.com/devicons/devicon/blob/master/icons/python/python-original.svg" target="_blank" title="Python" alt="Python" width="50" height="50"/></h1>
+<h1 align="center">Final Grade: 20/20🌟</h1>
 
 A full-featured compiler for the **standard Pascal language**, developed as a practical project for the *Processamento de Linguagens* course at the University of Minho.
 
@@ -69,7 +70,7 @@ Paste any Pascal program into the textarea and view its AST rendered using SVG.
 
 Example:
 
-![AST Example](../assets/ast_preview.png)
+![AST Example](assets/ast_preview.png)
 
 ## 🛠️ Requirements
 
@@ -97,5 +98,5 @@ This project is licensed under the MIT License. See the [LICENSE](./LICENSE) fil
 
 Full technical documentation is available in the `docs/` folder:
 
-- [`report.md`](docs/report.md) – complete explanation of the implementation
-- [`projeto.pdf`](docs/projeto.pdf) – original project description
+- [report.md](docs/report.md) – complete explanation of the implementation
+- [projeto.pdf](docs/projeto.pdf) – original project description
