@@ -1,5 +1,5 @@
 <h1 align="center">Pascal Compiler<img align="center" src="https://github.com/devicons/devicon/blob/master/icons/python/python-original.svg" target="_blank" title="Python" alt="Python" width="50" height="50"/></h1>
-<h1 align="center">Final Grade: 20/20🌟</h1>
+<h1 align="center">Final Grade: 20/20🍀</h1>
 
 A full-featured compiler for the **standard Pascal language**, developed as a practical project for the *Processamento de Linguagens* course at the University of Minho.
 
